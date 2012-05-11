@@ -10,7 +10,7 @@ public class Playtime extends JavaPlugin
 	
 	public void onEnable()
 	{
-		// read external file for event stuff
+		// read external file for current event stuff
 		log = this.getLogger();
 		log.info("Your plugin has been enabled!");
 	}
