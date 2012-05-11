@@ -1,3 +1,17 @@
+## Eclipse
+.project
+.metadata
+lib/**
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
 
-/bin
-/.settings
+.settings/**

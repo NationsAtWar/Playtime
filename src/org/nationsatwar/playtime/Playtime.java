@@ -1,7 +1,8 @@
 package org.nationsatwar.playtime;
 
 import java.util.logging.Logger;
-
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Playtime extends JavaPlugin
@@ -19,4 +20,16 @@ public class Playtime extends JavaPlugin
 	{
 		log.info("Your plugin has been disabled!");
 	}
+	
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
+    {
+    	if(cmd.getName().equalsIgnoreCase("basic"))
+    	{ 
+    		
+    		return true;
+    	} 
+    	return false; 
+    }
+
+
 }
