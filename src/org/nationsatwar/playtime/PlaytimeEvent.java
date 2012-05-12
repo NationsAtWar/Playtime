@@ -1,9 +1,14 @@
 package org.nationsatwar.playtime;
 
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
 public class PlaytimeEvent 
 {
 	String name;
 	boolean hidden;
+	Location location;
+	Player player;
 	
 	public PlaytimeEvent(String n)
 	{
@@ -26,4 +31,18 @@ public class PlaytimeEvent
 	{
 		return hidden;
 	}
+	
+	public void setSpawn(Location l)
+	{
+		location = l;
+		player = null;
+	}
+	
+	public void setSpawn(Player p)
+	{
+		player = p;
+		location = null;
+	}
+	
+	// use this to teleport players?
 }

@@ -13,6 +13,6 @@ commands:
       usage: /event create [name]
       permission: playtime.admins
    end:
-      description: ends an event with the supply name; also removes all subscriptions
+      description: ends an event with the supply name; also removes all subscriptions to that event
       usage: /event end [name]
       permission: playtime.admins

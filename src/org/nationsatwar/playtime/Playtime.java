@@ -65,7 +65,7 @@ public class Playtime extends JavaPlugin
 	    				}
 				    }
     			}
-    			else // user is console
+    			else // user is server
     			{
     				if(args[1] != null)
     				{
@@ -97,13 +97,13 @@ public class Playtime extends JavaPlugin
     			{
 	    			if(player.hasPermission("playtime.admins"))
 				    {
-	    				if(args[1] != null)
+	    				if(args[1] != null) // event name
 	    				{
-	    					if(map.get(args[1]) != null)
+	    					if(map.get(args[1]) != null) // if event with name is found
 	    					{
 	    						map.remove(args[1]);
 		    					// remove event from file
-		    					// remove subscription info, too
+		    					// remove subscriptions, too
 	    						// message to player using command
 	    						// general message to players (subscribed to event?) that event has ended
 	    					}
@@ -118,7 +118,7 @@ public class Playtime extends JavaPlugin
 	    				}
 				    }
     			}
-    			else // user is console
+    			else // user is server
     			{
     				if(args[1] != null)
     				{
@@ -126,7 +126,7 @@ public class Playtime extends JavaPlugin
     					{
     						map.remove(args[1]);
         					// remove event from file
-        					// remove subscription info, too
+        					// remove subscriptions, too
     						// general message to players (subscribed to event?) that event has ended
     						log.info("Event '"+args[0]+"' successfully ended.");
     					}
@@ -143,10 +143,43 @@ public class Playtime extends JavaPlugin
     		}
     		else if(args[0].equalsIgnoreCase("setspawn"))
     		{
-    			if(player.hasPermission("playtime.admins"))
-			    {
+    			if(player != null) // user is player
+    			{
+	    			if(player.hasPermission("playtime.admins"))
+				    {
+	    				if(args[1] != null) // event name
+	    				{
+	    					if(map.get(args[1]) != null) // if event with name is found
+	    					{
+	    	    				if(args[2] != null) // player name or nothing
+	    	    				{
+	    	    					// player name was provided
+	    	    					// check player is online?
+	    	    					// set player as event spawn
+	    	    				}
+	    	    				else
+	    	    				{
+	    	    					// no player provided, so take user's current location as spawn
+	    	    					PlaytimeEvent temp = map.get(args[1]);
+	    	    					temp.setSpawn(player.getLocation());
+	    	    					map.put(args[1],temp);
+	    	    				}
+	    					}
+	    					else
+	    					{
+	    						log.info("Error: event '"+args[1]+"' does not exist.");
+	    					}
+	    				}
+						else
+						{
+							// help text
+						}
+				    }
+    			}
+    			else // user is server
+    			{
     				
-			    }
+    			}
     		}
     		else if(args[0].equalsIgnoreCase("forcesubscribe"))
     		{
