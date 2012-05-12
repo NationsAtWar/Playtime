@@ -13,5 +13,4 @@ local.properties
 .classpath
 .settings/
 .loadpath
-
 .settings/**
