@@ -11,7 +11,7 @@ public class PlaytimeEvent
 	boolean hidden;
 	Location location;
 	Player player;
-	HashMap<String, Player> subscribed;
+	HashMap<String, Location> subscribed;
 	
 	public PlaytimeEvent(String n)
 	{
@@ -47,11 +47,11 @@ public class PlaytimeEvent
 		location = null;
 	}
 	
-	public void subscribe(Player p)
+	public void subscribe(Player p) // return true for success, false for failure? This could be used by the server or a player, ultimately
 	{
 		if(subscribed.get(p.getName()) == null)
 		{
-			subscribed.put(p.getName(),p);
+			subscribed.put(p.getName(),p.getLocation());
 			// teleport player to spawn
 		}
 		else
@@ -60,7 +60,7 @@ public class PlaytimeEvent
 		}
 	}
 	
-	public void unsubscribe(Player p)
+	public void unsubscribe(Player p) // return boolean
 	{
 		if(subscribed.get(p.getName()) != null)
 		{

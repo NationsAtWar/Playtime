@@ -16,3 +16,4 @@ commands:
       description: ends an event with the supply name; also removes all subscriptions to that event
       usage: /event end [name]
       permission: playtime.admins
+   subscribe
