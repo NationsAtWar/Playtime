@@ -154,6 +154,7 @@ public class Playtime extends JavaPlugin
 	    	    					// no player provided, so take user's current location as spawn
 	    	    					temp = map.get(args[1]);
 	    	    					temp.setSpawn(player.getLocation());
+	    	    					map.put(args[1],temp);
 	    	    				}
 	    					}
 	    					else
@@ -200,46 +201,58 @@ public class Playtime extends JavaPlugin
 	    			{
 		    			if(player.hasPermission("playtime.admins")) // check if player has permission to subscribe other players
 					    {
-		    					if(args[2] != null) // subscribing named player to event
-		    					{
-		    						// get player from name
-		    						// subscribe player to event
-		    						// notify player, user
+	    					if(args[2] != null) // subscribing named player to event
+	    					{
+	    						// get player from name
+	    						Player p = getServer().getPlayer(args[2]); // get player from server
+	    						if(!temp.isSubscribed(p.getName())) // if player is not subscribed
+	    						{
+	    							temp.subscribe(p); // subscribe player to event
+	    							map.put(args[1],temp);
+	    							player.sendMessage(p.getName() + " subscribed to event " + args[1] + ".");
+	    							p.sendMessage("You have been subscribed to event " + args[1] + " by " + player.getName() + ".");
 		    						// do not notify player if event is hidden?
-		    					}
-		    					else // subscribing self to event
-		    					{
-		    						temp = map.get(args[1]);
-		    						if(!temp.isSubscribed(player.getName())) // if player is not subscribed
-		    						{
-		    							temp.subscribe(player);
-		    							map.put(args[1],temp);
-		    							// tell player they subscribed to event
-		    						}
-		    						else
-		    						{
-		    							// error: player is already subscribed
-		    						}
-		    					}
+	    							// store in file
+	    						}
+	    						else
+	    						{
+	    							player.sendMessage(p.getName() + "is already subscribed to event " + args[1] + ".");
+	    						}
+	    						
+	    					}
+	    					else // subscribing self to event
+	    					{
+	    						temp = map.get(args[1]);
+	    						if(!temp.isSubscribed(player.getName())) // if player is not subscribed
+	    						{
+	    							temp.subscribe(player);
+	    							map.put(args[1],temp);
+	    							player.sendMessage("You have subscribed to event " + args[1] + ".");
+	    							// store in file
+	    						}
+	    						else
+	    						{
+	    							player.sendMessage("You are already subscribed to event " + args[1] + ".");
+	    						}
+	    					}
 					    }
 		    			else // player does not have permission; can only subscribe self to event
 		    			{
-		    					if(map.get(args[1]) != null) // check event exists
-		    					{
-		    						temp = map.get(args[1]);
-		    						if(!temp.isSubscribed(player.getName())) // if player is not subscribed
-		    						{
-		    							temp.subscribe(player);
-		    							map.put(args[1],temp);
-		    							// tell player they subscribed to event
-		    						}
-		    						else
-		    						{
-		    							// error: player is already subscribed
-		    						}
-		    					}
-		    					// check player isn't already subscribed
-		    					// subscribe player to event
+	    					if(map.get(args[1]) != null) // check event exists
+	    					{
+	    						temp = map.get(args[1]);
+	    						if(!temp.isSubscribed(player.getName())) // if player is not subscribed
+	    						{
+	    							temp.subscribe(player);
+	    							map.put(args[1],temp);
+	    							player.sendMessage("You have subscribed to event " + args[1] + ".");
+	    							// store in file
+	    						}
+	    						else
+	    						{
+	    							player.sendMessage("You are already subscribed to event " + args[1] + ".");
+	    						}
+	    					}
 		    			}
 	    			}
 	    			else
