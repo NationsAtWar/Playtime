@@ -205,9 +205,16 @@ public class Playtime extends JavaPlugin
 	    					{
 	    						// get player from name
 	    						Player p = getServer().getPlayer(args[2]); // get player from server
-	    						if(!temp.isSubscribed(p.getName())) // if player is not subscribed
+	    						boolean s = false;
+	    						for (PlaytimeEvent t : map.values()) // check whether player is already subscribed to an event
 	    						{
-	    							temp.subscribe(p); // subscribe player to event
+	    							if(t.isSubscribed(p.getName()))
+	    								s = true;
+	    						}
+
+	    						if(!s) // subscribe player to event
+	    						{
+	    							temp.subscribe(p); 
 	    							map.put(args[1],temp);
 	    							player.sendMessage(p.getName() + " subscribed to event " + args[1] + ".");
 	    							p.sendMessage("You have been subscribed to event " + args[1] + " by " + player.getName() + ".");
@@ -216,14 +223,22 @@ public class Playtime extends JavaPlugin
 	    						}
 	    						else
 	    						{
-	    							player.sendMessage(p.getName() + "is already subscribed to event " + args[1] + ".");
+	    							player.sendMessage(p.getName() + " is already subscribed to an event.");
+	    							// feedback on which event?
 	    						}
 	    						
 	    					}
 	    					else // subscribing self to event
 	    					{
 	    						temp = map.get(args[1]);
-	    						if(!temp.isSubscribed(player.getName())) // if player is not subscribed
+	    						boolean s = false;
+	    						for (PlaytimeEvent t : map.values()) // check whether player is already subscribed to an event
+	    						{
+	    							if(t.isSubscribed(player.getName()))
+	    								s = true;
+	    						}
+
+	    						if(!s) // if player is not subscribed
 	    						{
 	    							temp.subscribe(player);
 	    							map.put(args[1],temp);
@@ -232,7 +247,7 @@ public class Playtime extends JavaPlugin
 	    						}
 	    						else
 	    						{
-	    							player.sendMessage("You are already subscribed to event " + args[1] + ".");
+	    							player.sendMessage("You are already subscribed to an event.");
 	    						}
 	    					}
 					    }
@@ -241,7 +256,14 @@ public class Playtime extends JavaPlugin
 	    					if(map.get(args[1]) != null) // check event exists
 	    					{
 	    						temp = map.get(args[1]);
-	    						if(!temp.isSubscribed(player.getName())) // if player is not subscribed
+	    						boolean s = false;
+	    						for (PlaytimeEvent t : map.values()) // check whether player is already subscribed to an event
+	    						{
+	    							if(t.isSubscribed(player.getName()))
+	    								s = true;
+	    						}
+
+	    						if(!s) // if player is not subscribed
 	    						{
 	    							temp.subscribe(player);
 	    							map.put(args[1],temp);
@@ -250,7 +272,7 @@ public class Playtime extends JavaPlugin
 	    						}
 	    						else
 	    						{
-	    							player.sendMessage("You are already subscribed to event " + args[1] + ".");
+	    							player.sendMessage("You are already subscribed to an event.");
 	    						}
 	    					}
 		    			}
@@ -291,6 +313,6 @@ public class Playtime extends JavaPlugin
     			
     		}
     	}
-    return false; // remember to add return true;s where necessary
+    return false; // remember to add return trues where necessary
     }
 }
