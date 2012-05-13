@@ -79,5 +79,15 @@ public class PlaytimeEvent
 		return false;
 	}
 	
+	public String getInfo()
+	{
+		String s = getName() + ": ";
+		int n = 0;
+		for (String key : subscribed.keySet()) 
+		    n++;
+		s += n + " subscribed players";
+		return s;
+	}
+	
 	// use this to teleport players?
 }

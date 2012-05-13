@@ -310,7 +310,11 @@ public class Playtime extends JavaPlugin
     		}
     		else if(args[0].equalsIgnoreCase("list"))
     		{
-    			
+    			player.sendMessage("Events in progress:"); // show something else if none are in progress
+    			for (PlaytimeEvent value : map.values()) 
+    			{
+    				player.sendMessage(value.getInfo());
+    			}
     		}
     	}
     return false; // remember to add return trues where necessary
