@@ -61,12 +61,13 @@ public class Playtime extends JavaPlugin
 			    						temp = new PlaytimeEvent(args[1]);
 			    						map.put(args[1],temp);
 			    						// also put event in file
-			    						// message to player
 		    						}
+		    						player.sendMessage("Event "+args[1]+"' successfully created.");
 		    					}
 		    					else
 		    					{
 		    						// error; event already exists.
+		    						player.sendMessage("Error: event '"+args[1]+"' already exists.");
 		    					}
 						    }
 		    			}
@@ -107,10 +108,12 @@ public class Playtime extends JavaPlugin
 			    					// remove subscriptions, too
 		    						// message to player using command
 		    						// general message to players (subscribed to event?) that event has ended
+		    						player.sendMessage("Event '"+args[1]+"' successfully ended.");
 		    					}
 		    					else
 		    					{
 		    						// error; event does not exist
+		    						player.sendMessage("Error: event '"+args[1]+"' does not exist.");
 		    					}
 						    }
 		    			}
@@ -204,6 +207,7 @@ public class Playtime extends JavaPlugin
 			    	    					temp = map.get(args[1]);
 			    	    					temp.setSpawn(p);
 			    	    					map.put(args[1],temp);
+			    	    					log.info(p.getName()+" set as spawn for event "+args[1]);
 			    						}
 			    						else
 			    						{
