@@ -35,11 +35,20 @@ public class Playtime extends JavaPlugin implements Listener
 	{
 		// check if player is subscribed to an event
 		// if subscribed, teleport to spawn location
-		Player player = event.getPlayer();
-		for (PlaytimeEvent value : map.values()) 
+		final Player pl = event.getPlayer();
+		for (final PlaytimeEvent value : map.values()) 
 		{
-			if(value.isSubscribed(player.getName()))
-				value.teleportToSpawn(player);
+			if(value.isSubscribed(pl.getName()))
+			{
+				getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
+				{
+					public void run() 
+					{
+						value.teleportToSpawn(pl);
+					}
+				}, 200L);
+				
+			}
 		}
 	}
 	
