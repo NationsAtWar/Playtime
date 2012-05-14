@@ -5,9 +5,12 @@ import java.util.logging.Logger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Playtime extends JavaPlugin
+public class Playtime extends JavaPlugin implements Listener
 {
 	Logger log;
 	HashMap<String, PlaytimeEvent> map;
@@ -24,6 +27,12 @@ public class Playtime extends JavaPlugin
 	public void onDisable()
 	{
 		log.info("Playtime has been disabled!");
+	}
+
+	@EventHandler // EventPriority.NORMAL by default
+	public void onPlayerRespawn(PlayerRespawnEvent event)
+	{
+		// respawn-teleport here
 	}
 	
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
@@ -154,7 +163,7 @@ public class Playtime extends JavaPlugin
 		    					{
 		    						if(args.length >= 3)
 		    						{
-			    	    				if(args[2] != null) // player name or nothing
+			    	    				if(args[2] != null) // player name
 			    	    				{
 			    	    					// player name was provided
 			    							Player p = null;
@@ -173,15 +182,15 @@ public class Playtime extends JavaPlugin
 					    						player.sendMessage("Error: " + args[2] + " is not a valid player.");
 				    						}
 			    	    				}
-			    	    				else
-			    	    				{
-			    	    					// no player provided, so take user's current location as spawn
-			    	    					temp = map.get(args[1]);
-			    	    					temp.setSpawn(player.getLocation());
-			    	    					map.put(args[1],temp);
-				    						player.sendMessage("Current location set as spawn for event "+args[1]);
-			    	    				}
 		    						}
+		    	    				else
+		    	    				{
+		    	    					// no player provided, so take user's current location as spawn
+		    	    					temp = map.get(args[1]);
+		    	    					temp.setSpawn(player.getLocation());
+		    	    					map.put(args[1],temp);
+			    						player.sendMessage("Current location set as spawn for event "+args[1]);
+		    	    				}
 		    					}
 		    					else
 		    					{
