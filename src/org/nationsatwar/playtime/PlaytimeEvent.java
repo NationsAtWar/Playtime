@@ -17,12 +17,14 @@ public class PlaytimeEvent
 	{
 		name = n;
 		hidden = false;
+		subscribed = new HashMap<String, Location>();
 	}
 	
 	public PlaytimeEvent(String n, boolean h)
 	{
 		name = n;
 		hidden = h;
+		subscribed = new HashMap<String, Location>();
 	}
 	
 	public String getName()
@@ -83,9 +85,11 @@ public class PlaytimeEvent
 	{
 		String s = getName() + ": ";
 		int n = 0;
-		for (String key : subscribed.keySet()) 
+		for (@SuppressWarnings("unused") String key : subscribed.keySet()) 
 		    n++;
 		s += n + " subscribed players";
+		if(isHidden())
+			s += " (hidden)";
 		return s;
 	}
 	
