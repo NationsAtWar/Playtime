@@ -20,6 +20,7 @@ public class Playtime extends JavaPlugin implements Listener
 	{
 		// read external file for current event stuff
 		log = this.getLogger();
+		getServer().getPluginManager().registerEvents(this, this);
 		map = new HashMap<String,PlaytimeEvent>();
 		log.info("Playtime has been enabled!");
 	}
@@ -32,7 +33,14 @@ public class Playtime extends JavaPlugin implements Listener
 	@EventHandler // EventPriority.NORMAL by default
 	public void onPlayerRespawn(PlayerRespawnEvent event)
 	{
-		// respawn-teleport here
+		// check if player is subscribed to an event
+		// if subscribed, teleport to spawn location
+		Player player = event.getPlayer();
+		for (PlaytimeEvent value : map.values()) 
+		{
+			if(value.isSubscribed(player.getName()))
+				value.teleportToSpawn(player);
+		}
 	}
 	
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)

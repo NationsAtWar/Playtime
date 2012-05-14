@@ -2,6 +2,7 @@ package org.nationsatwar.playtime;
 
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -10,7 +11,7 @@ public class PlaytimeEvent
 	String name;
 	boolean hidden;
 	Location location;
-	Player player;
+	String player;
 	HashMap<String, Location> subscribed;
 	
 	public PlaytimeEvent(String n)
@@ -45,7 +46,7 @@ public class PlaytimeEvent
 	
 	public void setSpawn(Player p)
 	{
-		player = p;
+		player = p.getName();
 		location = null;
 	}
 	
@@ -91,6 +92,24 @@ public class PlaytimeEvent
 		if(isHidden())
 			s += " (hidden)";
 		return s;
+	}
+	
+	public void teleportToSpawn(Player p)
+	{
+		if(location != null)
+			p.teleport(location);
+		else if(player != null)
+		{
+			Player spawn = (Bukkit.getServer().getPlayer(player));
+			if(spawn != null)
+			{
+				p.teleport(spawn.getLocation());
+			}
+			else
+			{
+				// there was a problem; spawn location player was offline.
+			}
+		}
 	}
 	
 	// use this to teleport players?
