@@ -62,7 +62,7 @@ public class Playtime extends JavaPlugin
 			    						map.put(args[1],temp);
 			    						// also put event in file
 		    						}
-		    						player.sendMessage("Event "+args[1]+"' successfully created.");
+		    						player.sendMessage("Event '"+args[1]+"' successfully created.");
 		    					}
 		    					else
 		    					{
@@ -393,59 +393,39 @@ public class Playtime extends JavaPlugin
 	    		}
 	    		else if(args[0].equalsIgnoreCase("unsubscribe"))
 	    		{
-					if(args.length >= 2)
-					{
-		    			if(player != null)
-		    			{
-			    			if(player.hasPermission("playtime.admins"))
-						    {
-	    						if(args.length >= 3) // if a name has been provided, admin wants to unsubscribe player from event
-	    						{
-	    							Player p = null;
-	    							p = getServer().getPlayer(args[2]);
-		    						if(p != null)
-		    						{
-		    							boolean s = false;
-			    						for (PlaytimeEvent t : map.values()) // find if player is subscribed to event
-			    						{
-			    							if(t.isSubscribed(p.getName()))
-			    							{
-			    								t.unsubscribe(p);
-			    								player.sendMessage(p.getName() + " unsubscribed from event " + t.getName());
-			    								p.sendMessage("You have been unsubscribed from event " + t.getName() + " by " + player.getName());
-			    								s = true;
-			    							}
-			    						}
-			    						if(!s)
-			    						{
-			    							player.sendMessage("Error: " + p.getName() + " is not subscribed to any event.");
-			    						}
-		    						}
-		    						else
-		    						{
-			    						player.sendMessage("Error: " + args[2] + " is not a valid player.");
-		    						}
-	    						}
-	    						else // otherwise, admin just wants to unsubscribe from an event they're in
+	    			if(player != null)
+	    			{
+		    			if(player.hasPermission("playtime.admins"))
+					    {
+    						if(args.length >= 3) // if a name has been provided, admin wants to unsubscribe player from event
+    						{
+    							Player p = null;
+    							p = getServer().getPlayer(args[2]);
+	    						if(p != null)
 	    						{
 	    							boolean s = false;
 		    						for (PlaytimeEvent t : map.values()) // find if player is subscribed to event
 		    						{
-		    							if(t.isSubscribed(player.getName()))
+		    							if(t.isSubscribed(p.getName()))
 		    							{
-		    								t.unsubscribe(player);
-		    								player.sendMessage("You have unsubscribed from event " + t.getName());
+		    								t.unsubscribe(p);
+		    								player.sendMessage(p.getName() + " unsubscribed from event " + t.getName());
+		    								p.sendMessage("You have been unsubscribed from event " + t.getName() + " by " + player.getName());
 		    								s = true;
 		    							}
 		    						}
 		    						if(!s)
 		    						{
-		    							player.sendMessage("Error: you are not subscribed to any event.");
+		    							player.sendMessage("Error: " + p.getName() + " is not subscribed to any event.");
 		    						}
 	    						}
-						    }
-			    			else // player can only unsubscribe themselves
-			    			{
+	    						else
+	    						{
+		    						player.sendMessage("Error: " + args[2] + " is not a valid player.");
+	    						}
+    						}
+    						else // otherwise, admin just wants to unsubscribe from an event they're in
+    						{
     							boolean s = false;
 	    						for (PlaytimeEvent t : map.values()) // find if player is subscribed to event
 	    						{
@@ -460,47 +440,60 @@ public class Playtime extends JavaPlugin
 	    						{
 	    							player.sendMessage("Error: you are not subscribed to any event.");
 	    						}
-			    			}
-		    			}
-		    			else
-		    			{
-		    				// server wants to unsubscribe someone
-		    				if(args.length >= 3) // if a name has been provided
-    						{
-    							Player p = null;
-    							p = getServer().getPlayer(args[2]);
-	    						if(p != null)
-	    						{
-	    							boolean s = false;
-		    						for (PlaytimeEvent t : map.values()) // find if player is subscribed to event
-		    						{
-		    							if(t.isSubscribed(p.getName()))
-		    							{
-		    								t.unsubscribe(p);
-		    								log.info(p.getName() + " unsubscribed from event " + t.getName());
-		    								p.sendMessage("You have been unsubscribed from event " + t.getName() + " by server");
-		    								s = true;
-		    							}
-		    						}
-		    						if(!s)
-		    						{
-		    							log.info("Error: " + p.getName() + " is not subscribed to any event.");
-		    						}
-	    						}
-	    						else
-	    						{
-	    							log.info("Error: " + args[2] + " is not a valid player.");
-	    						}
     						}
-		    				else
-		    				{
-		    					log.info("Error: must provide player name");
-		    				}
+					    }
+		    			else // player can only unsubscribe themselves
+		    			{
+							boolean s = false;
+    						for (PlaytimeEvent t : map.values()) // find if player is subscribed to event
+    						{
+    							if(t.isSubscribed(player.getName()))
+    							{
+    								t.unsubscribe(player);
+    								player.sendMessage("You have unsubscribed from event " + t.getName());
+    								s = true;
+    							}
+    						}
+    						if(!s)
+    						{
+    							player.sendMessage("Error: you are not subscribed to any event.");
+    						}
 		    			}
-					}
+	    			}
 	    			else
 	    			{
-	    				// help text
+	    				// server wants to unsubscribe someone
+	    				if(args.length >= 3) // if a name has been provided
+						{
+							Player p = null;
+							p = getServer().getPlayer(args[2]);
+    						if(p != null)
+    						{
+    							boolean s = false;
+	    						for (PlaytimeEvent t : map.values()) // find if player is subscribed to event
+	    						{
+	    							if(t.isSubscribed(p.getName()))
+	    							{
+	    								t.unsubscribe(p);
+	    								log.info(p.getName() + " unsubscribed from event " + t.getName());
+	    								p.sendMessage("You have been unsubscribed from event " + t.getName() + " by server");
+	    								s = true;
+	    							}
+	    						}
+	    						if(!s)
+	    						{
+	    							log.info("Error: " + p.getName() + " is not subscribed to any event.");
+	    						}
+    						}
+    						else
+    						{
+    							log.info("Error: " + args[2] + " is not a valid player.");
+    						}
+						}
+	    				else
+	    				{
+	    					log.info("Error: must provide player name");
+	    				}
 	    			}
 	    			return true;
 	    		}
