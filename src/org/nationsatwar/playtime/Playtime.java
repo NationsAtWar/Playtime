@@ -2,6 +2,8 @@ package org.nationsatwar.playtime;
 
 import java.util.*;
 import java.util.logging.Logger;
+
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,12 +24,13 @@ public class Playtime extends JavaPlugin implements Listener
 		log = this.getLogger();
 		getServer().getPluginManager().registerEvents(this, this);
 		map = new HashMap<String,PlaytimeEvent>();
-		// load stuff from config
+		//readConfig();
 		log.info("Playtime has been enabled!");
 	}
 	
 	public void onDisable()
 	{
+		this.saveConfig();
 		log.info("Playtime has been disabled!");
 	}
 
@@ -52,7 +55,49 @@ public class Playtime extends JavaPlugin implements Listener
 			}
 		}
 	}
-	
+
+	public void readConfig()
+	{
+		//get events from config.yml, stuff into the hashmaps
+		Set<String> eventKeys = this.getConfig().getConfigurationSection("events").getKeys(false);
+		Iterator<String> e = eventKeys.iterator();
+		String eventName = null;
+		
+		do
+		{
+			eventName = (String) e.next();
+			String path = "events."+eventName+".";
+			
+			// get basic event from config.yml
+			temp = new PlaytimeEvent(eventName,this.getConfig().getBoolean(path+"hidden"));
+			map.put(eventName,temp);
+			log.info("Loading event '"+eventName+"'");
+			
+			// get spawn data
+			
+			// get subscribers
+			/*
+			Set<String> subKeys = this.getConfig().getConfigurationSection("events."+eventName+".subscribers").getKeys(false);
+			Iterator<String> s = subKeys.iterator();
+			String subscriber;
+			
+			do
+			{
+				subscriber = (String) s.next();
+				log.info("Adding player '"+subscriber+"'");
+				String sPath = "events."+eventName+".subscribers."+subscriber;
+				
+				Location l = (Location) this.getConfig().get(sPath+".location");
+				
+				temp = map.get(eventName);
+				temp.subscribe(subscriber,l);
+				
+				map.put(eventName,temp);
+			}while(s.hasNext());
+			*/
+			
+		}while(e.hasNext());
+	}
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
     {
     	Player player = null;
@@ -236,7 +281,7 @@ public class Playtime extends JavaPlugin implements Listener
 		    	    					
 		    	    					String path = "events."+args[1]+".";
 		    	    					this.getConfig().set(path+"spawn.location",player.getLocation());
-		    	    					this.getConfig().set("spawn.player",null);
+		    	    					this.getConfig().set(path+"spawn.player",null);
 			    					    this.saveConfig();
 		    	    					
 			    						player.sendMessage("Current location set as spawn for event "+args[1]);
@@ -328,6 +373,11 @@ public class Playtime extends JavaPlugin implements Listener
 				    						{
 				    							temp.subscribe(p); 
 				    							map.put(args[1],temp);
+
+				    	    					String path = "events."+args[1]+".subscribers."+p.getName()+".";
+				    	    					this.getConfig().set(path+"origLocation",p.getLocation());
+					    					    this.saveConfig();
+				    							
 				    							player.sendMessage(p.getName() + " subscribed to event " + args[1] + ".");
 				    							p.sendMessage("You have been subscribed to event " + args[1] + " by " + player.getName() + ".");
 					    						// do not notify player if event is hidden?
@@ -358,6 +408,11 @@ public class Playtime extends JavaPlugin implements Listener
 			    						{
 			    							temp.subscribe(player);
 			    							map.put(args[1],temp);
+			    							
+			    	    					String path = "events."+args[1]+".subscribers."+player.getName()+".";
+			    	    					this.getConfig().set(path+"origLocation",player.getLocation());
+				    					    this.saveConfig();
+				    					    
 			    							player.sendMessage("You have subscribed to event " + args[1] + ".");
 			    							// store in file
 			    						}
@@ -383,6 +438,11 @@ public class Playtime extends JavaPlugin implements Listener
 			    						{
 			    							temp.subscribe(player);
 			    							map.put(args[1],temp);
+
+			    	    					String path = "events."+args[1]+".subscribers."+player.getName()+".";
+			    	    					this.getConfig().set(path+"origLocation",player.getLocation());
+				    					    this.saveConfig();
+				    					    
 			    							player.sendMessage("You have subscribed to event " + args[1] + ".");
 			    							// store in file
 			    						}
@@ -420,6 +480,11 @@ public class Playtime extends JavaPlugin implements Listener
 			    						{
 			    							temp.subscribe(p); 
 			    							map.put(args[1],temp);
+
+			    	    					String path = "events."+args[1]+".subscribers."+p.getName()+".";
+			    	    					this.getConfig().set(path+"origLocation",p.getLocation());
+				    					    this.saveConfig();
+			    							
 			    							log.info(p.getName() + " subscribed to event " + args[1] + ".");
 			    							p.sendMessage("You have been subscribed to event " + args[1] + " by server.");
 				    						// do not notify player if event is hidden?
@@ -474,6 +539,11 @@ public class Playtime extends JavaPlugin implements Listener
 		    							if(t.isSubscribed(p.getName()))
 		    							{
 		    								t.unsubscribe(p);
+		    								
+			    	    					String path = "events."+args[1]+".";
+			    	    					this.getConfig().set(path+"subscribers."+p.getName(),null);
+				    					    this.saveConfig();
+				    					    
 		    								player.sendMessage(p.getName() + " unsubscribed from event " + t.getName());
 		    								p.sendMessage("You have been unsubscribed from event " + t.getName() + " by " + player.getName());
 		    								s = true;
@@ -497,6 +567,11 @@ public class Playtime extends JavaPlugin implements Listener
 	    							if(t.isSubscribed(player.getName()))
 	    							{
 	    								t.unsubscribe(player);
+
+		    	    					String path = "events."+args[1]+".";
+		    	    					this.getConfig().set(path+"subscribers."+player.getName(),null);
+			    					    this.saveConfig();
+	    								
 	    								player.sendMessage("You have unsubscribed from event " + t.getName());
 	    								s = true;
 	    							}
@@ -515,6 +590,11 @@ public class Playtime extends JavaPlugin implements Listener
     							if(t.isSubscribed(player.getName()))
     							{
     								t.unsubscribe(player);
+
+	    	    					String path = "events."+args[1]+".";
+	    	    					this.getConfig().set(path+"subscribers."+player.getName(),null);
+		    					    this.saveConfig();
+		    					    
     								player.sendMessage("You have unsubscribed from event " + t.getName());
     								s = true;
     							}
@@ -540,6 +620,11 @@ public class Playtime extends JavaPlugin implements Listener
 	    							if(t.isSubscribed(p.getName()))
 	    							{
 	    								t.unsubscribe(p);
+	    								
+		    	    					String path = "events."+args[1]+".";
+		    	    					this.getConfig().set(path+"subscribers."+p.getName(),null);
+			    					    this.saveConfig();
+			    					    
 	    								log.info(p.getName() + " unsubscribed from event " + t.getName());
 	    								p.sendMessage("You have been unsubscribed from event " + t.getName() + " by server");
 	    								s = true;

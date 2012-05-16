@@ -63,6 +63,19 @@ public class PlaytimeEvent
 		}
 	}
 	
+	public void subscribe(String n, Location l)
+	{
+		if(subscribed.get(n) == null)
+		{
+			subscribed.put(n,l);
+			// teleport player to spawn
+		}
+		else
+		{
+			// error: player already subscribed to event
+		}
+	}
+	
 	public void unsubscribe(Player p) // return boolean
 	{
 		if(subscribed.get(p.getName()) != null)
