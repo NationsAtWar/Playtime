@@ -148,6 +148,9 @@ public class Playtime extends JavaPlugin implements Listener
 		    					if(map.get(args[1]) != null) // if event with name is found
 		    					{
 		    						map.remove(args[1]);
+		    						String path = "events."+args[1];
+		    						this.getConfig().set(path, null);
+		    						this.saveConfig();
 			    					// remove event from file
 		    						// message to player using command
 		    						// general message to players (subscribed to event?) that event has ended
@@ -167,6 +170,9 @@ public class Playtime extends JavaPlugin implements Listener
 		    					if(map.get(args[1]) != null)
 		    					{
 		    						map.remove(args[1]);
+		    						String path = "events."+args[1];
+		    						this.getConfig().set(path, null);
+		    						this.saveConfig();
 		        					// remove event from file
 		    						// general message to players (subscribed to event?) that event has ended
 		    						log.info("Event '"+args[1]+"' successfully ended.");
