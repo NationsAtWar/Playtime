@@ -22,6 +22,7 @@ public class Playtime extends JavaPlugin implements Listener
 		log = this.getLogger();
 		getServer().getPluginManager().registerEvents(this, this);
 		map = new HashMap<String,PlaytimeEvent>();
+		// load stuff from config
 		log.info("Playtime has been enabled!");
 	}
 	
@@ -74,20 +75,23 @@ public class Playtime extends JavaPlugin implements Listener
 						    {
 		    					if(map.get(args[1]) == null) // makes sure event with name does not already exist
 		    					{
+		    						String path = "events."+args[1]+".";
 		    						if(args.length >= 3)
 		    						{
 		    							if(args[2].equalsIgnoreCase("hidden"))
 		    							{
 			    							temp = new PlaytimeEvent(args[1], true);
 				    						map.put(args[1],temp);
+				    						this.getConfig().set(path+"hidden",true);
 		    							}
 		    						}
 		    						else
 		    						{
 			    						temp = new PlaytimeEvent(args[1]);
 			    						map.put(args[1],temp);
-			    						// also put event in file
+			    						this.getConfig().set(path+"hidden",false);
 		    						}
+		    					    this.saveConfig();
 		    						player.sendMessage("Event '"+args[1]+"' successfully created.");
 		    					}
 		    					else
@@ -101,9 +105,23 @@ public class Playtime extends JavaPlugin implements Listener
 		    			{
 							if(map.get(args[1]) == null) // makes sure event with name does not already exist
 							{
-		    					temp = new PlaytimeEvent(args[1]);
-		    					map.put(args[1],temp);
-		    					// also put event in file
+	    						String path = "events."+args[1];
+	    						if(args.length >= 3)
+	    						{
+	    							if(args[2].equalsIgnoreCase("hidden"))
+	    							{
+		    							temp = new PlaytimeEvent(args[1], true);
+			    						map.put(args[1],temp);
+			    						this.getConfig().set(path+".hidden",true);
+	    							}
+	    						}
+	    						else
+	    						{
+		    						temp = new PlaytimeEvent(args[1]);
+		    						map.put(args[1],temp);
+		    						this.getConfig().set(path+".hidden",false);
+	    						}
+	    					    this.saveConfig();
 		    					log.info("Event '"+args[1]+"' successfully created.");
 							}
 							else
@@ -131,7 +149,6 @@ public class Playtime extends JavaPlugin implements Listener
 		    					{
 		    						map.remove(args[1]);
 			    					// remove event from file
-			    					// remove subscriptions, too
 		    						// message to player using command
 		    						// general message to players (subscribed to event?) that event has ended
 		    						player.sendMessage("Event '"+args[1]+"' successfully ended.");
@@ -151,7 +168,6 @@ public class Playtime extends JavaPlugin implements Listener
 		    					{
 		    						map.remove(args[1]);
 		        					// remove event from file
-		        					// remove subscriptions, too
 		    						// general message to players (subscribed to event?) that event has ended
 		    						log.info("Event '"+args[1]+"' successfully ended.");
 		    					}
@@ -192,6 +208,11 @@ public class Playtime extends JavaPlugin implements Listener
 				    	    					temp = map.get(args[1]);
 				    	    					temp.setSpawn(p);
 				    	    					map.put(args[1],temp);
+				    	    					String path = "events."+args[1]+".";
+				    	    					this.getConfig().set(path+"spawn.player",p.getName());
+				    	    					this.getConfig().set(path+"spawn.location", null);
+					    					    this.saveConfig();
+				    	    					
 					    						player.sendMessage(p.getName()+" set as spawn for event "+args[1]);
 				    						}
 				    						else
@@ -206,6 +227,12 @@ public class Playtime extends JavaPlugin implements Listener
 		    	    					temp = map.get(args[1]);
 		    	    					temp.setSpawn(player.getLocation());
 		    	    					map.put(args[1],temp);
+		    	    					
+		    	    					String path = "events."+args[1]+".";
+		    	    					this.getConfig().set(path+"spawn.location",player.getLocation());
+		    	    					this.getConfig().set("spawn.player",null);
+			    					    this.saveConfig();
+		    	    					
 			    						player.sendMessage("Current location set as spawn for event "+args[1]);
 		    	    				}
 		    					}
@@ -233,6 +260,12 @@ public class Playtime extends JavaPlugin implements Listener
 			    	    					temp = map.get(args[1]);
 			    	    					temp.setSpawn(p);
 			    	    					map.put(args[1],temp);
+			    	    					
+			    	    					String path = "events."+args[1]+".";
+			    	    					this.getConfig().set(path+"spawn.player",p.getLocation());
+			    	    					this.getConfig().set(path+"spawn.location",null);
+				    					    this.saveConfig();
+			    	    					
 			    	    					log.info(p.getName()+" set as spawn for event "+args[1]);
 			    						}
 			    						else
@@ -292,7 +325,7 @@ public class Playtime extends JavaPlugin implements Listener
 				    							player.sendMessage(p.getName() + " subscribed to event " + args[1] + ".");
 				    							p.sendMessage("You have been subscribed to event " + args[1] + " by " + player.getName() + ".");
 					    						// do not notify player if event is hidden?
-				    							// store in file
+
 				    						}
 				    						else
 				    						{
