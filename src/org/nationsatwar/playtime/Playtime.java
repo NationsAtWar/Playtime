@@ -24,7 +24,8 @@ public class Playtime extends JavaPlugin implements Listener
 		log = this.getLogger();
 		getServer().getPluginManager().registerEvents(this, this);
 		map = new HashMap<String,PlaytimeEvent>();
-		//readConfig();
+		getConfig();
+		readConfig();
 		log.info("Playtime has been enabled!");
 	}
 	
@@ -59,44 +60,62 @@ public class Playtime extends JavaPlugin implements Listener
 	public void readConfig()
 	{
 		//get events from config.yml, stuff into the hashmaps
-		Set<String> eventKeys = this.getConfig().getConfigurationSection("events").getKeys(false);
-		Iterator<String> e = eventKeys.iterator();
-		String eventName = null;
-		
-		do
+		if(this.getConfig().getString("events") != null)
 		{
-			eventName = (String) e.next();
-			String path = "events."+eventName+".";
-			
-			// get basic event from config.yml
-			temp = new PlaytimeEvent(eventName,this.getConfig().getBoolean(path+"hidden"));
-			map.put(eventName,temp);
-			log.info("Loading event '"+eventName+"'");
-			
-			// get spawn data
-			
-			// get subscribers
-			/*
-			Set<String> subKeys = this.getConfig().getConfigurationSection("events."+eventName+".subscribers").getKeys(false);
-			Iterator<String> s = subKeys.iterator();
-			String subscriber;
+			Set<String> eventKeys = this.getConfig().getConfigurationSection("events").getKeys(false);
+			Iterator<String> e = eventKeys.iterator();
+			String eventName = null;
 			
 			do
 			{
-				subscriber = (String) s.next();
-				log.info("Adding player '"+subscriber+"'");
-				String sPath = "events."+eventName+".subscribers."+subscriber;
+				eventName = (String) e.next();
+				String path = "events."+eventName+".";
 				
-				Location l = (Location) this.getConfig().get(sPath+".location");
+				// get basic event from config.yml
+				temp = new PlaytimeEvent(eventName,this.getConfig().getBoolean(path+"hidden"));
+				log.info("Loading event '"+eventName+"'");
 				
-				temp = map.get(eventName);
-				temp.subscribe(subscriber,l);
+				// get spawn data
+				if(this.getConfig().getString(path+"spawn") != null)
+				{
+					if(this.getConfig().getString(path+".spawn.location.world") != null)
+					{
+						Location l = new Location(getServer().getWorld(this.getConfig().getString(path+"spawn.location.world")), this.getConfig().getDouble(path+"spawn.location.x"), this.getConfig().getDouble(path+"spawn.location.y"), this.getConfig().getDouble(path+"spawn.location.z"));
+						temp.setSpawn(l);
+					}
+					else if(this.getConfig().getString(path+".spawn.player") != null)
+					{
+						temp.setSpawn(this.getConfig().getString(path+".player"));
+					}
+				}
 				
 				map.put(eventName,temp);
-			}while(s.hasNext());
-			*/
-			
-		}while(e.hasNext());
+				
+				// get subscribers
+				if(this.getConfig().getConfigurationSection("events."+eventName+".subscribers") != null)
+				{
+					Set<String> subKeys = this.getConfig().getConfigurationSection("events."+eventName+".subscribers").getKeys(false);
+					Iterator<String> s = subKeys.iterator();
+					String subscriber;
+					
+					do
+					{
+						subscriber = (String) s.next();
+						log.info("Adding player '"+subscriber+"'");
+						String sPath = "events."+eventName+".subscribers."+subscriber+".";
+						
+						Location l = new Location(getServer().getWorld(this.getConfig().getString(sPath+"origLocation.world")), this.getConfig().getDouble(sPath+"origLocation.x"), this.getConfig().getDouble(sPath+"origLocation.y"), this.getConfig().getDouble(sPath+"origLocation.z"));
+						
+						temp = map.get(eventName);
+						temp.subscribe(subscriber,l);
+						
+					}while(s.hasNext());
+				}
+				
+				map.put(eventName,temp);
+				
+			}while(e.hasNext());
+		}
 	}
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
     {
@@ -136,6 +155,7 @@ public class Playtime extends JavaPlugin implements Listener
 			    						map.put(args[1],temp);
 			    						this.getConfig().set(path+"hidden",false);
 		    						}
+		    						this.getConfig().set(path+"spawn",false);
 		    					    this.saveConfig();
 		    						player.sendMessage("Event '"+args[1]+"' successfully created.");
 		    					}
@@ -280,7 +300,10 @@ public class Playtime extends JavaPlugin implements Listener
 		    	    					map.put(args[1],temp);
 		    	    					
 		    	    					String path = "events."+args[1]+".";
-		    	    					this.getConfig().set(path+"spawn.location",player.getLocation());
+		    	    					this.getConfig().set(path+"spawn.location.x",player.getLocation().getX());
+		    	    					this.getConfig().set(path+"spawn.location.y",player.getLocation().getY());
+		    	    					this.getConfig().set(path+"spawn.location.z",player.getLocation().getZ());
+		    	    					this.getConfig().set(path+"spawn.location.world",player.getWorld().getName());
 		    	    					this.getConfig().set(path+"spawn.player",null);
 			    					    this.saveConfig();
 		    	    					
@@ -313,7 +336,7 @@ public class Playtime extends JavaPlugin implements Listener
 			    	    					map.put(args[1],temp);
 			    	    					
 			    	    					String path = "events."+args[1]+".";
-			    	    					this.getConfig().set(path+"spawn.player",p.getLocation());
+			    	    					this.getConfig().set(path+"spawn.player",p.getName());
 			    	    					this.getConfig().set(path+"spawn.location",null);
 				    					    this.saveConfig();
 			    	    					
@@ -375,7 +398,10 @@ public class Playtime extends JavaPlugin implements Listener
 				    							map.put(args[1],temp);
 
 				    	    					String path = "events."+args[1]+".subscribers."+p.getName()+".";
-				    	    					this.getConfig().set(path+"origLocation",p.getLocation());
+				    	    					this.getConfig().set(path+"origLocation.x",p.getLocation().getX());
+				    	    					this.getConfig().set(path+"origLocation.y",p.getLocation().getY());
+				    	    					this.getConfig().set(path+"origLocation.z",p.getLocation().getZ());
+				    	    					this.getConfig().set(path+"origLocation.world",p.getLocation().getWorld().getName());
 					    					    this.saveConfig();
 				    							
 				    							player.sendMessage(p.getName() + " subscribed to event " + args[1] + ".");
@@ -408,9 +434,12 @@ public class Playtime extends JavaPlugin implements Listener
 			    						{
 			    							temp.subscribe(player);
 			    							map.put(args[1],temp);
-			    							
+
 			    	    					String path = "events."+args[1]+".subscribers."+player.getName()+".";
-			    	    					this.getConfig().set(path+"origLocation",player.getLocation());
+			    	    					this.getConfig().set(path+"origLocation.x",player.getLocation().getX());
+			    	    					this.getConfig().set(path+"origLocation.y",player.getLocation().getY());
+			    	    					this.getConfig().set(path+"origLocation.z",player.getLocation().getZ());
+			    	    					this.getConfig().set(path+"origLocation.world",player.getLocation().getWorld().getName());
 				    					    this.saveConfig();
 				    					    
 			    							player.sendMessage("You have subscribed to event " + args[1] + ".");
@@ -440,7 +469,10 @@ public class Playtime extends JavaPlugin implements Listener
 			    							map.put(args[1],temp);
 
 			    	    					String path = "events."+args[1]+".subscribers."+player.getName()+".";
-			    	    					this.getConfig().set(path+"origLocation",player.getLocation());
+			    	    					this.getConfig().set(path+"origLocation.x",player.getLocation().getX());
+			    	    					this.getConfig().set(path+"origLocation.y",player.getLocation().getY());
+			    	    					this.getConfig().set(path+"origLocation.z",player.getLocation().getZ());
+			    	    					this.getConfig().set(path+"origLocation.world",player.getLocation().getWorld().getName());
 				    					    this.saveConfig();
 				    					    
 			    							player.sendMessage("You have subscribed to event " + args[1] + ".");
@@ -482,7 +514,10 @@ public class Playtime extends JavaPlugin implements Listener
 			    							map.put(args[1],temp);
 
 			    	    					String path = "events."+args[1]+".subscribers."+p.getName()+".";
-			    	    					this.getConfig().set(path+"origLocation",p.getLocation());
+			    	    					this.getConfig().set(path+"origLocation.x",p.getLocation().getX());
+			    	    					this.getConfig().set(path+"origLocation.y",p.getLocation().getY());
+			    	    					this.getConfig().set(path+"origLocation.z",p.getLocation().getZ());
+			    	    					this.getConfig().set(path+"origLocation.world",p.getLocation().getWorld().getName());
 				    					    this.saveConfig();
 			    							
 			    							log.info(p.getName() + " subscribed to event " + args[1] + ".");

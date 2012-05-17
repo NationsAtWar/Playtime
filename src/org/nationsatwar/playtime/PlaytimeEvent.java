@@ -50,6 +50,12 @@ public class PlaytimeEvent
 		location = null;
 	}
 	
+	public void setSpawn(String p)
+	{
+		player = p;
+		location = null;
+	}
+	
 	public void subscribe(Player p) // return true for success, false for failure? This could be used by the server or a player, ultimately
 	{
 		if(subscribed.get(p.getName()) == null)
@@ -68,7 +74,6 @@ public class PlaytimeEvent
 		if(subscribed.get(n) == null)
 		{
 			subscribed.put(n,l);
-			// teleport player to spawn
 		}
 		else
 		{
