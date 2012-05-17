@@ -49,6 +49,7 @@ public class Playtime extends JavaPlugin implements Listener
 				{
 					public void run() 
 					{
+						pl.sendMessage("If your currently-subscribed event has a respawn point set, you will be teleported to it in approximately ten seconds.");
 						value.teleportToSpawn(pl);
 					}
 				}, 200L);
@@ -142,6 +143,7 @@ public class Playtime extends JavaPlugin implements Listener
 		    						String path = "events."+args[1]+".";
 		    						if(args.length >= 3)
 		    						{
+		    							// loop through 2 to < args.length, check for arguments like 'hidden'
 		    							if(args[2].equalsIgnoreCase("hidden"))
 		    							{
 			    							temp = new PlaytimeEvent(args[1], true);
@@ -699,6 +701,7 @@ public class Playtime extends JavaPlugin implements Listener
 		    				}
 		    				else
 		    					player.sendMessage(value.getInfo());
+		    				// indicate the event currently subscribed to?
 		    			}
 	    			}
 	    			else

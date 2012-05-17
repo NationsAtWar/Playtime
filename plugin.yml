@@ -6,6 +6,7 @@ author: Feldherren
 permissions:
   playtime.admins:
     description: Allows user to create and end events, and set event spawn locations.
+    default: op
 
 commands:
   event:
