@@ -9,10 +9,13 @@ import org.bukkit.entity.Player;
 public class PlaytimeEvent 
 {
 	String name;
-	boolean hidden;
 	Location location;
 	String player;
 	HashMap<String, Location> subscribed;
+	
+	boolean hidden;
+	//boolean teleportOnJoin;
+	//int secondsToTeleport;
 	
 	public PlaytimeEvent(String n)
 	{

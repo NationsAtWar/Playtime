@@ -201,6 +201,16 @@ public class Playtime extends JavaPlugin implements Listener
 					else
 					{
 						// instructions on use of command
+						if(player != null)
+						{
+							player.sendMessage("Usage: /event create [name] - creates an event with the provided name.");
+							player.sendMessage("Options: 'hidden' - event will not appear when using the list command for people without the permission playtime.admins.");
+						}
+						else
+						{
+							log.info("Usage: /event create [name] - creates an event with the provided name.");
+							log.info("Options: 'hidden' - event will not appear when using the list command for people without the permission playtime.admins.");
+						}
 					}
 					return true;
 	    		}
@@ -216,9 +226,9 @@ public class Playtime extends JavaPlugin implements Listener
 		    					{
 		    						map.remove(args[1]);
 		    						String path = "events."+args[1];
+			    					// remove event from config.yml
 		    						this.getConfig().set(path, null);
 		    						this.saveConfig();
-			    					// remove event from file
 		    						// message to player using command
 		    						// general message to players (subscribed to event?) that event has ended
 		    						player.sendMessage("Event '"+args[1]+"' successfully ended.");
@@ -254,6 +264,14 @@ public class Playtime extends JavaPlugin implements Listener
 					else
 					{
 						// instructions on use of command
+						if(player != null)
+						{
+							player.sendMessage("Usage: /event end [event] - ends the named event.");
+						}
+						else
+						{
+							log.info("Usage: /event end [event] - ends the named event.");
+						}
 					}
 					return true;
 	    		}
@@ -365,6 +383,18 @@ public class Playtime extends JavaPlugin implements Listener
 					else
 					{
 						// help text
+						if(player != null)
+						{
+							if(player.hasPermission("playtime.admins"))
+							{
+								player.sendMessage("Usage: /event setspawn [event] - sets the spawn location for the named event at the user's location.");
+								player.sendMessage("Usage: /event setspawn [event] [player] - sets the spawn location for the named event as the named user; respawning players will be teleported to the named player.");
+							}
+						}
+						else
+						{
+							log.info("Usage: /event setspawn [event] [player] - sets the spawn location for the named event as the named user; respawning players will be teleported to the named player.");
+						}
 					}
 					return true;
 	    		}
@@ -555,6 +585,18 @@ public class Playtime extends JavaPlugin implements Listener
 					else
 					{
 						// help text
+						if(player != null)
+						{
+							player.sendMessage("Usage: /event subscribe [event] - subscribes yourself to the named event.");
+							if(player.hasPermission("playtime.admins"))
+							{
+								player.sendMessage("Usage: /event subscribe [event] [player] - subscribes the named player to the named event.");
+							}
+						}
+						else
+						{
+							log.info("Usage: /event subscribe [event] [player] - subscribes the named player to the named event.");
+						}
 					}
 					return true;
 	    		}
@@ -679,7 +721,7 @@ public class Playtime extends JavaPlugin implements Listener
 						}
 	    				else
 	    				{
-	    					log.info("Error: must provide player name");
+	    					log.info("Usage: /event unsubscribe [event] [player] - unsubscribes designated player from named event, if they are subscribed to an event.");
 	    				}
 	    			}
 	    			return true;
