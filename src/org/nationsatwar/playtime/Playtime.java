@@ -203,8 +203,13 @@ public class Playtime extends JavaPlugin implements Listener
 						// instructions on use of command
 						if(player != null)
 						{
-							player.sendMessage("Usage: /event create [name] - creates an event with the provided name.");
-							player.sendMessage("Options: 'hidden' - event will not appear when using the list command for people without the permission playtime.admins.");
+							if(player.hasPermission("playtime.admins"))
+							{
+								player.sendMessage("Usage: /event create [name] - creates an event with the provided name.");
+								player.sendMessage("Options: 'hidden' - event will not appear when using the list command for people without the permission playtime.admins.");
+							}
+							else
+								player.sendMessage("You do not have permission to use this command.");
 						}
 						else
 						{
@@ -266,7 +271,10 @@ public class Playtime extends JavaPlugin implements Listener
 						// instructions on use of command
 						if(player != null)
 						{
-							player.sendMessage("Usage: /event end [event] - ends the named event.");
+							if(player.hasPermission("playtime.admins"))
+								player.sendMessage("Usage: /event end [event] - ends the named event.");
+							else
+								player.sendMessage("You do not have permission to use this command.");
 						}
 						else
 						{
@@ -390,6 +398,8 @@ public class Playtime extends JavaPlugin implements Listener
 								player.sendMessage("Usage: /event setspawn [event] - sets the spawn location for the named event at the user's location.");
 								player.sendMessage("Usage: /event setspawn [event] [player] - sets the spawn location for the named event as the named user; respawning players will be teleported to the named player.");
 							}
+							else
+								player.sendMessage("You do not have permission to use this command.");
 						}
 						else
 						{
