@@ -1,5 +1,6 @@
 package org.nationsatwar.playtime;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
@@ -12,10 +13,17 @@ public class PlaytimeEvent
 	Location location;
 	String player;
 	HashMap<String, Location> subscribed;
+	Date start;
+	Date end;
 	
 	boolean hidden;
 	//boolean teleportOnJoin;
 	//int secondsToTeleport;
+	//int allowedRespawns ?
+	
+	// Store start time, store end time.
+	// don't allow advance subscribing
+	// event should announce itself when it starts, if not hidden
 	
 	public PlaytimeEvent(String n)
 	{
@@ -57,6 +65,34 @@ public class PlaytimeEvent
 	{
 		player = p;
 		location = null;
+	}
+	
+	public void setStartTime(Date d)
+	{
+		start = d;
+	}
+	
+	public Date getStartTime()
+	{
+		return start;
+	}
+	
+	public void setEndTime(Date d)
+	{
+		// put this test in the command itself
+		//if(start != null)
+		//	if(d.after(start))
+		//		end = d;
+		//	else
+		//	{
+				// error;
+		//	}
+		end = d;
+	}
+	
+	public Date getEndTime()
+	{
+		return end;
 	}
 	
 	public void subscribe(Player p) // return true for success, false for failure? This could be used by the server or a player, ultimately

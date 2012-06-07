@@ -408,6 +408,47 @@ public class Playtime extends JavaPlugin implements Listener
 					}
 					return true;
 	    		}
+	    		else if(args[0].equalsIgnoreCase("setTime"))
+	    		{
+	    			if(args.length >= 4)
+					{
+		    			if(map.get(args[1]) != null) // check provided event exists
+		    			{
+		    				if(args[2].equalsIgnoreCase("start"))
+		    				{
+		    					
+		    				}
+			    			if(args[2].equalsIgnoreCase("end")) // finish?
+			    			{
+			    				
+			    			}
+				    		if(args[2].equalsIgnoreCase("teleport"))
+				    		{
+				    			
+				    		}
+		    			}
+					}
+	    			else
+	    			{
+	    				// help text
+	    				if(player != null)
+	    				{
+							if(player.hasPermission("playtime.admins"))
+							{
+		    					player.sendMessage("Usage: /event setTime [event] [start/end] aa.bb.cc xx:yy:zz - specify date and time for start or end of event.");
+		    					player.sendMessage("Usage: /event setTime [event] [start/end] xx:yy:zz - specify time only, assumes current date.");
+		    					player.sendMessage("Usage: /event setTime [event] teleport [seconds] - specifies time in seconds until subscribed players are teleported to spawn.");
+							}
+							else
+								player.sendMessage("You do not have permission to use this command.");
+	    				}
+	    				else
+	    				{
+	    					
+	    				}
+	    			}
+	    			return true;
+	    		}
 	    		else if(args[0].equalsIgnoreCase("subscribe"))
 	    		{
 					if(args.length >= 2) // if event name has been provided
