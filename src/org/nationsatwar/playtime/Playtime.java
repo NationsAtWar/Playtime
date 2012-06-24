@@ -45,11 +45,12 @@ public class Playtime extends JavaPlugin implements Listener
 		{
 			if(value.isSubscribed(pl.getName()))
 			{
+				pl.sendMessage("If your currently-subscribed event has a respawn point set, you will be teleported to it in approximately ten seconds.");
+				// grab time-to-teleport from the event and change message as necessary
 				getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
 				{
 					public void run() 
 					{
-						pl.sendMessage("If your currently-subscribed event has a respawn point set, you will be teleported to it in approximately ten seconds.");
 						value.teleportToSpawn(pl);
 					}
 				}, 200L);
@@ -408,23 +409,117 @@ public class Playtime extends JavaPlugin implements Listener
 					}
 					return true;
 	    		}
-	    		else if(args[0].equalsIgnoreCase("setTime"))
+	    		else if(args[0].equalsIgnoreCase("setTime")) 
 	    		{
 	    			if(args.length >= 4)
 					{
 		    			if(map.get(args[1]) != null) // check provided event exists
 		    			{
-		    				if(args[2].equalsIgnoreCase("start"))
+		    				if(args[2].equalsIgnoreCase("start") || args[2].equalsIgnoreCase("end")) // or end; most of the checking for either command is the same, except at the point the information is put into the PlaytimeEvent.
 		    				{
-		    					
+		    					if(args.length >= 5) // at least time and date need to be specified
+		    					{
+		    						// parse date, parse time
+		    						// set date and time in PlaytimeEvent
+		    						
+		    						// time/date format:  YYYY-MM-DD HH:MM:SS TZ
+		    						// Alter command to just take it in that order only?
+		    						// can drop timezone
+		    						// server is apparently using Moscow time
+		    						if(args[3].matches("\\d\\d\\d\\d-\\d\\d-\\d\\d")) // YYYY-MM-DD
+		    						{
+			    						String[] date = args[3].split("-");
+			    						
+		    							if(args[4].matches("\\d\\d:\\d\\d:\\d\\d") || args[4].matches("\\d\\d:\\d\\d")) // HH:MM:SS or HH:MM
+			    						{
+				    						String[] time = args[4].split(":");
+				    						// how to turn this into a date?
+				    						GregorianCalendar cal = new GregorianCalendar(); // needs setting with correct timezone
+				    						// date/time format: <almiteycow>  YYYY-MM-DD HH:MM:SS TZ
+				    						// if no timezone is given, assume... UTC?
+				    						// year month day hour minute
+				    						if(time.length >= 3) // if seconds were specified
+				    						{
+				    							cal.set(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2]),Integer.parseInt(time[0]),Integer.parseInt(time[1]),Integer.parseInt(time[2]));
+				    						}
+				    						else // seconds weren't specified
+				    						{
+					    						cal.set(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2]),Integer.parseInt(time[0]),Integer.parseInt(time[1]));
+				    						}
+				    						
+				    						// if timezone provided, use that.
+				    						// record it in event, provide both UTC and that timezone when asked about event details
+				    						// translate to server timezone when checking.
+
+			    	    					String path = "events."+args[1]+".time.";
+			    	    					
+				    						if(args[2].equalsIgnoreCase("start"))
+				    						{
+				    							map.get(args[1]).setStartTime(cal);
+				    							this.getConfig().set(path+"start",cal.getTime());
+				    						}
+				    						else
+				    						{
+				    							map.get(args[1]).setEndTime(cal);
+				    							this.getConfig().set(path+"end",cal.getTime());
+				    						}
+				    							
+				    					    this.saveConfig();
+			    						}
+			    						else
+			    						{
+			    							if(player != null)
+			    								player.sendMessage("Error: must provide recogniseable time.");
+			    							else
+			    								log.info("Error: must provide recogniseable time.");
+			    							// error message: must provide recogniseable time
+			    						}
+		    						}
+		    						else
+		    						{
+		    							if(player != null)
+		    								player.sendMessage("Error: must provide recogniseable date.");
+		    							else
+		    								log.info("Error: must provide recogniseable date.");
+		    							// error message: must provide recogniseable date and time
+		    						}
+		    					}
+		    					else // nothing was specified following 'start' or 'end'.
+		    					{
+		    						// help text
+		    						if(args[2].equalsIgnoreCase("start"))
+		    						{
+		    							// helptext for start
+		    							if(player != null)
+		    								player.sendMessage("Usage: /event setTime [event] start yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+		    							else
+		    								log.info("Usage: /event setTime [event] start yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+		    						}
+		    						else if (args[2].equalsIgnoreCase("end"))
+		    						{
+		    							// helptext for end
+		    							if(player != null)
+		    								player.sendMessage("Usage: /event setTime [event] end yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+		    							else
+		    								log.info("Usage: /event setTime [event] end yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+		    						}
+		    						else
+		    						{
+		    							// helptext for start/end or setTime on the whole?
+		    							if(player != null)
+		    								player.sendMessage("Usage: /event setTime [event] [start/end] yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+		    							else
+		    								log.info("Usage: /event setTime [event] [start/end] yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+		    						}
+		    					}
 		    				}
-			    			if(args[2].equalsIgnoreCase("end")) // finish?
-			    			{
-			    				
-			    			}
 				    		if(args[2].equalsIgnoreCase("teleport"))
 				    		{
 				    			
+				    		}
+				    		else
+				    		{
+				    			// just used setTime; help text
 				    		}
 		    			}
 					}
@@ -435,7 +530,7 @@ public class Playtime extends JavaPlugin implements Listener
 	    				{
 							if(player.hasPermission("playtime.admins"))
 							{
-		    					player.sendMessage("Usage: /event setTime [event] [start/end] aa.bb.cc xx:yy:zz - specify date and time for start or end of event.");
+		    					player.sendMessage("Usage: /event setTime [event] [start/end] yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
 		    					player.sendMessage("Usage: /event setTime [event] [start/end] xx:yy:zz - specify time only, assumes current date.");
 		    					player.sendMessage("Usage: /event setTime [event] teleport [seconds] - specifies time in seconds until subscribed players are teleported to spawn.");
 							}

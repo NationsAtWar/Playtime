@@ -1,6 +1,6 @@
 package org.nationsatwar.playtime;
 
-import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
@@ -13,8 +13,8 @@ public class PlaytimeEvent
 	Location location;
 	String player;
 	HashMap<String, Location> subscribed;
-	Date start;
-	Date end;
+	GregorianCalendar start;
+	GregorianCalendar end;
 	
 	boolean hidden;
 	//boolean teleportOnJoin;
@@ -67,17 +67,17 @@ public class PlaytimeEvent
 		location = null;
 	}
 	
-	public void setStartTime(Date d)
+	public void setStartTime(GregorianCalendar c)
 	{
-		start = d;
+		start = c;
 	}
 	
-	public Date getStartTime()
+	public GregorianCalendar getStartTime()
 	{
 		return start;
 	}
 	
-	public void setEndTime(Date d)
+	public void setEndTime(GregorianCalendar c)
 	{
 		// put this test in the command itself
 		//if(start != null)
@@ -87,10 +87,10 @@ public class PlaytimeEvent
 		//	{
 				// error;
 		//	}
-		end = d;
+		end = c;
 	}
 	
-	public Date getEndTime()
+	public GregorianCalendar getEndTime()
 	{
 		return end;
 	}
