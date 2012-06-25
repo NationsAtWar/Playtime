@@ -1,5 +1,7 @@
 package org.nationsatwar.playtime;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -112,6 +114,48 @@ public class Playtime extends JavaPlugin implements Listener
 						temp.subscribe(subscriber,l);
 						
 					}while(s.hasNext());
+				}
+				
+				// get event start and end times
+				if(this.getConfig().getString(path+"time") != null)
+				{
+					SimpleDateFormat parse = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+					if(this.getConfig().getString(path+"time.start") != null)
+					{
+						String s = this.getConfig().getString(path+"time.start");
+						// problem: returns dates in ISO-format as something like 'Mon Feb 16th 21:32:00 GMT 1987'
+						// time is fine, but how to deal with date when month is 'Feb'?
+						log.info(temp.getName() + " " + "start: " + s);
+						GregorianCalendar d = new GregorianCalendar();
+						try 
+						{
+							d.setTime(parse.parse(s));
+						} 
+						catch (ParseException e1) 
+						{
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						temp.setStartTime(d);
+					}
+					if(this.getConfig().getString(path+"time.end") != null)
+					{
+						String s = this.getConfig().getString(path+"time.end");
+						// problem: returns dates in ISO-format as something like 'Mon Feb 16th 21:32:00 GMT 1987'
+						// time is fine, but how to deal with date when month is 'Feb'?
+						log.info(temp.getName() + " " + "end: " + s);
+						GregorianCalendar d = new GregorianCalendar();
+						try 
+						{
+							d.setTime(parse.parse(s));
+						} 
+						catch (ParseException e1) 
+						{
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						temp.setEndTime(d);
+					}
 				}
 				
 				map.put(eventName,temp);
@@ -519,7 +563,7 @@ public class Playtime extends JavaPlugin implements Listener
 				    		}
 				    		else
 				    		{
-				    			// just used setTime; help text
+				    			// just used setTime validly; help text
 				    		}
 		    			}
 					}
@@ -539,7 +583,10 @@ public class Playtime extends JavaPlugin implements Listener
 	    				}
 	    				else
 	    				{
-	    					
+
+	    					log.info("Usage: /event setTime [event] [start/end] yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+	    					log.info("Usage: /event setTime [event] [start/end] xx:yy:zz - specify time only, assumes current date.");
+	    					log.info("Usage: /event setTime [event] teleport [seconds] - specifies time in seconds until subscribed players are teleported to spawn.");
 	    				}
 	    			}
 	    			return true;
