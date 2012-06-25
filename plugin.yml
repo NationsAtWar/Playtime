@@ -1,6 +1,6 @@
 name: Playtime
 main: org.nationsatwar.playtime.Playtime
-version: 0.1
+version: 0.1.0
 author: Feldherren
 
 permissions:
