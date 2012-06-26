@@ -591,7 +591,7 @@ public class Playtime extends JavaPlugin implements Listener
 	    			}
 	    			return true;
 	    		}
-	    		else if(args[0].equalsIgnoreCase("subscribe"))
+	    		else if(args[0].equalsIgnoreCase("subscribe")||args[0].equalsIgnoreCase("sub"))
 	    		{
 					if(args.length >= 2) // if event name has been provided
 					{
@@ -793,7 +793,7 @@ public class Playtime extends JavaPlugin implements Listener
 					}
 					return true;
 	    		}
-	    		else if(args[0].equalsIgnoreCase("unsubscribe"))
+	    		else if(args[0].equalsIgnoreCase("unsubscribe")||args[0].equalsIgnoreCase("unsub"))
 	    		{
 	    			if(player != null)
 	    			{
@@ -836,21 +836,15 @@ public class Playtime extends JavaPlugin implements Listener
     							boolean s = false;
 	    						for (PlaytimeEvent t : map.values()) // find if player is subscribed to event
 	    						{
-    								if(args.length >= 2)
-    								{
-		    	    					String path = "events."+args[1]+".";
+	    							if(t.isSubscribed(player.getName()))
+	    							{
+		    	    					String path = "events."+t.getName()+".";
 		    	    					this.getConfig().set(path+"subscribers."+player.getName(),null);
 			    					    this.saveConfig();
 			    					    
 	    								player.sendMessage("You have unsubscribed from event " + t.getName());
 	    								s = true;
-    								}
-    								else
-    								{
-    									// else if player is subscribed to an event and doesn't name it
-    									// check if subscribed to multiple, require event name to unsubscribe.
-    									// if only subscribed to one event, unsubscribe from it.
-    								}
+	    							}
 	    						}
 	    						if(!s)
 	    						{
