@@ -927,22 +927,78 @@ public class Playtime extends JavaPlugin implements Listener
 	    		}
 	    		else if(args[0].equalsIgnoreCase("list"))
 	    		{
-	
 	    			if(player != null)
 	    			{
-		    			player.sendMessage("Events in progress: "); // show something else if none are in progress
-		    			for (PlaytimeEvent value : map.values()) 
+		    			if(args.length >= 2)
 		    			{
-		    				if(value.isHidden())
+		    				if(args[1].equalsIgnoreCase("current"))
 		    				{
-		    					if(player.hasPermission("playtime.admins"))
-							    {
-			    					player.sendMessage(value.getInfo());
-							    }
+		    					player.sendMessage("- Current Events -");
+		    					for (final PlaytimeEvent value : map.values()) 
+		    					{
+		    						if(value.isActive())
+		    						{
+			    						String e = value.getName();
+			    						if(value.hasEnd())
+			    							e += " ending at "+ value.getEndTime().toString();
+			    						if(value.isSubscribed(player.getName()))
+			    							player.sendMessage("&a"+e); // green text
+			    						else
+			    							player.sendMessage("&f"+e);
+		    						}
+		    					}
+		    				}
+		    				else if(args[1].equalsIgnoreCase("upcoming"))
+		    				{
+		    					player.sendMessage("- Upcoming Events -");
+		    					for (final PlaytimeEvent value : map.values()) 
+		    					{
+		    						if(!value.isActive() && value.hasStart())
+		    						{
+			    						String e = value.getName() + " starting at "+ value.getStartTime().toString();
+			    						// check for whether or not a player's voted for an event here.
+			    						player.sendMessage("&f"+e);
+		    						}
+		    					}
+		    					
+		    				}
+		    				else if(args[1].equalsIgnoreCase("inactive"))
+		    				{
+		    					
+		    				}
+		    				else if(args[1].equalsIgnoreCase("hidden"))
+		    				{
+		    					
 		    				}
 		    				else
-		    					player.sendMessage(value.getInfo());
-		    				// indicate the event currently subscribed to?
+		    				{
+		    					// display all events
+		    					player.sendMessage("- Current Events -");
+		    					for (final PlaytimeEvent value : map.values()) 
+		    					{
+		    						if(value.isActive())
+		    						{
+			    						String e = value.getName();
+			    						if(value.hasEnd())
+			    							e += " ending at "+ value.getEndTime().toString();
+			    						if(value.isSubscribed(player.getName()))
+			    							player.sendMessage("&a"+e); // green text
+			    						else
+			    							player.sendMessage("&f"+e);
+		    						}
+		    					}
+		    					player.sendMessage("");
+		    					player.sendMessage("- Upcoming Events -");
+		    					for (final PlaytimeEvent value : map.values()) 
+		    					{
+		    						if(!value.isActive() && value.hasStart())
+		    						{
+			    						String e = value.getName() + " starting at "+ value.getStartTime().toString();
+			    						// check for whether or not a player's voted for an event here.
+			    						player.sendMessage("&f"+e);
+		    						}
+		    					}
+		    				}
 		    			}
 	    			}
 	    			else

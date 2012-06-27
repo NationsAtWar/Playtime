@@ -16,6 +16,7 @@ public class PlaytimeEvent
 	GregorianCalendar start;
 	GregorianCalendar end;
 	
+	boolean active;
 	boolean hidden;
 	//boolean teleportOnJoin;
 	//int secondsToTeleport;
@@ -30,6 +31,7 @@ public class PlaytimeEvent
 		name = n;
 		hidden = false;
 		subscribed = new HashMap<String, Location>();
+		active = false;
 	}
 	
 	public PlaytimeEvent(String n, boolean h)
@@ -37,6 +39,7 @@ public class PlaytimeEvent
 		name = n;
 		hidden = h;
 		subscribed = new HashMap<String, Location>();
+		active = false;
 	}
 	
 	public String getName()
@@ -44,9 +47,30 @@ public class PlaytimeEvent
 		return name;
 	}
 	
+	public boolean isActive()
+	{
+		return active;
+	}
+	
 	public boolean isHidden()
 	{
 		return hidden;
+	}
+	
+	public boolean hasStart()
+	{
+		if(start != null)
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean hasEnd()
+	{
+		if(end != null)
+			return true;
+		else
+			return false;
 	}
 	
 	public void setSpawn(Location l)
