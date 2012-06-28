@@ -927,6 +927,7 @@ public class Playtime extends JavaPlugin implements Listener
 	    		}
 	    		else if(args[0].equalsIgnoreCase("list"))
 	    		{
+					SimpleDateFormat parse = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
 	    			if(player != null)
 	    			{
 		    			if(args.length >= 2)
@@ -970,44 +971,104 @@ public class Playtime extends JavaPlugin implements Listener
 		    				{
 		    					
 		    				}
-		    				else
+		    			}
+	    				else
+	    				{
+	    					// display all events
+	    					player.sendMessage("- Current Events -");
+	    					for (final PlaytimeEvent value : map.values()) 
+	    					{
+	    						if(value.isActive())
+	    						{
+		    						String e = value.getName();
+		    						if(value.hasEnd())
+		    							e += " ending on "+ parse.format(value.getEndTime().getTime());
+		    						if(value.isSubscribed(player.getName()))
+		    							player.sendMessage("&a"+e); // green text
+		    						else
+		    							player.sendMessage("&f"+e);
+	    						}
+	    					}
+	    					player.sendMessage("");
+	    					player.sendMessage("- Upcoming Events -");
+	    					for (final PlaytimeEvent value : map.values()) 
+	    					{
+	    						if(!value.isActive() && value.hasStart())
+	    						{
+		    						String e = value.getName() + " starting on "+ parse.format(value.getStartTime().getTime());
+		    						// check for whether or not a player's voted for an event here.
+		    						player.sendMessage("&f"+e);
+	    						}
+	    					}
+	    				}
+	    			}
+	    			else
+	    			{
+		    			if(args.length >= 2)
+		    			{
+		    				if(args[1].equalsIgnoreCase("current"))
 		    				{
-		    					// display all events
-		    					player.sendMessage("- Current Events -");
+		    					log.info("- Current Events -");
 		    					for (final PlaytimeEvent value : map.values()) 
 		    					{
 		    						if(value.isActive())
 		    						{
 			    						String e = value.getName();
 			    						if(value.hasEnd())
-			    							e += " ending at "+ value.getEndTime().toString();
-			    						if(value.isSubscribed(player.getName()))
-			    							player.sendMessage("&a"+e); // green text
-			    						else
-			    							player.sendMessage("&f"+e);
+			    							e += " ending on "+ parse.format(value.getEndTime().getTime());
+			    						log.info(e);
 		    						}
 		    					}
-		    					player.sendMessage("");
-		    					player.sendMessage("- Upcoming Events -");
+		    				}
+		    				else if(args[1].equalsIgnoreCase("upcoming"))
+		    				{
+		    					log.info("- Upcoming Events -");
 		    					for (final PlaytimeEvent value : map.values()) 
 		    					{
 		    						if(!value.isActive() && value.hasStart())
 		    						{
-			    						String e = value.getName() + " starting at "+ value.getStartTime().toString();
+			    						String e = value.getName() + " starting on "+ parse.format(value.getStartTime().getTime());
 			    						// check for whether or not a player's voted for an event here.
-			    						player.sendMessage("&f"+e);
+			    						log.info(e);
 		    						}
 		    					}
+		    					
+		    				}
+		    				else if(args[1].equalsIgnoreCase("inactive"))
+		    				{
+		    					
+		    				}
+		    				else if(args[1].equalsIgnoreCase("hidden"))
+		    				{
+		    					
 		    				}
 		    			}
-	    			}
-	    			else
-	    			{
-	    				log.info("Events in progress: "); // show something else if none are in progress
-		    			for (PlaytimeEvent value : map.values()) 
-		    			{
-		    				log.info(value.getInfo());
-		    			}
+	    				else
+	    				{
+	    					// display all events
+	    					log.info("- Current Events -");
+	    					for (final PlaytimeEvent value : map.values()) 
+	    					{
+	    						if(value.isActive())
+	    						{
+		    						String e = value.getName();
+		    						if(value.hasEnd())
+		    							e += " ending on "+ parse.format(value.getEndTime().getTime());
+		    						log.info(e);
+	    						}
+	    					}
+	    					log.info("");
+	    					log.info("- Upcoming Events -");
+	    					for (final PlaytimeEvent value : map.values()) 
+	    					{
+	    						if(!value.isActive() && value.hasStart())
+	    						{
+		    						String e = value.getName() + " starting on "+ parse.format(value.getStartTime().getTime());
+		    						// check for whether or not a player's voted for an event here.
+		    						log.info(e);
+	    						}
+	    					}
+	    				}
 	    			}
 	    			return true;
 	    		}
