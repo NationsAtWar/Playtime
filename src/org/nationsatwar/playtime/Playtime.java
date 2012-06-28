@@ -928,7 +928,7 @@ public class Playtime extends JavaPlugin implements Listener
 	    		else if(args[0].equalsIgnoreCase("list"))
 	    		{
 					SimpleDateFormat parse = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
-	    			if(player != null)
+	    			if(player != null) // player is using command
 	    			{
 		    			if(args.length >= 2)
 		    			{
@@ -939,13 +939,26 @@ public class Playtime extends JavaPlugin implements Listener
 		    					{
 		    						if(value.isActive())
 		    						{
-			    						String e = value.getName();
-			    						if(value.hasEnd())
-			    							e += " ending at "+ value.getEndTime().toString();
-			    						if(value.isSubscribed(player.getName()))
-			    							player.sendMessage("&a"+e); // green text
-			    						else
-			    							player.sendMessage("&f"+e);
+		    							if(!value.isHidden())
+		    							{
+				    						String e = value.getName();
+				    						if(value.hasEnd())
+				    							e += " ending at "+ value.getEndTime().toString();
+				    						if(value.isSubscribed(player.getName()))
+				    							player.sendMessage("&a"+e); // green text
+				    						else
+				    							player.sendMessage("&f"+e);
+		    							}
+		    							else if(player.hasPermission("playtime.admins"))
+		    							{
+				    						String e = value.getName();
+				    						if(value.hasEnd())
+				    							e += " ending at "+ value.getEndTime().toString() + " (hidden)";
+				    						if(value.isSubscribed(player.getName()))
+				    							player.sendMessage("&a"+e); // green text
+				    						else
+				    							player.sendMessage("&f"+e);
+		    							}
 		    						}
 		    					}
 		    				}
@@ -956,9 +969,18 @@ public class Playtime extends JavaPlugin implements Listener
 		    					{
 		    						if(!value.isActive() && value.hasStart())
 		    						{
-			    						String e = value.getName() + " starting at "+ value.getStartTime().toString();
-			    						// check for whether or not a player's voted for an event here.
-			    						player.sendMessage("&f"+e);
+		    							if(!value.isHidden())
+		    							{
+				    						String e = value.getName() + " starting at "+ value.getStartTime().toString();
+				    						// check for whether or not a player's voted for an event here.
+				    						player.sendMessage("&f"+e);
+		    							}
+		    							else if(player.hasPermission("playtime.admins"))
+		    							{
+				    						String e = value.getName() + " starting at "+ value.getStartTime().toString();
+				    						// check for whether or not a player's voted for an event here.
+				    						player.sendMessage("&f"+e);
+		    							}
 		    						}
 		    					}
 		    					
@@ -969,7 +991,41 @@ public class Playtime extends JavaPlugin implements Listener
 		    				}
 		    				else if(args[1].equalsIgnoreCase("hidden"))
 		    				{
-		    					
+		    					if(player.hasPermission("playtime.admins"))
+		    					{
+		    						player.sendMessage("- Hidden Events -");
+			    					player.sendMessage("- Current -");
+			    					for (final PlaytimeEvent value : map.values()) 
+			    					{
+			    						if(value.isHidden())
+			    						{
+				    						if(value.isActive())
+				    						{
+					    						String e = value.getName();
+					    						if(value.hasEnd())
+					    							e += " ending on "+ parse.format(value.getEndTime().getTime());
+					    						if(value.isSubscribed(player.getName()))
+					    							player.sendMessage("&a"+e); // green text
+					    						else
+					    							player.sendMessage("&f"+e);
+				    						}
+			    						}
+			    					}
+			    					player.sendMessage("");
+			    					player.sendMessage("- Upcoming -");
+			    					for (final PlaytimeEvent value : map.values()) 
+			    					{
+			    						if(value.isHidden())
+			    						{
+				    						if(!value.isActive() && value.hasStart())
+				    						{
+					    						String e = value.getName() + " starting on "+ parse.format(value.getStartTime().getTime());
+					    						// check for whether or not a player's voted for an event here.
+					    						player.sendMessage("&f"+e);
+				    						}
+			    						}
+			    					}
+		    					}
 		    				}
 		    			}
 	    				else
@@ -980,13 +1036,26 @@ public class Playtime extends JavaPlugin implements Listener
 	    					{
 	    						if(value.isActive())
 	    						{
-		    						String e = value.getName();
-		    						if(value.hasEnd())
-		    							e += " ending on "+ parse.format(value.getEndTime().getTime());
-		    						if(value.isSubscribed(player.getName()))
-		    							player.sendMessage("&a"+e); // green text
-		    						else
-		    							player.sendMessage("&f"+e);
+	    							if(!value.isHidden())
+	    							{
+			    						String e = value.getName();
+			    						if(value.hasEnd())
+			    							e += " ending at "+ value.getEndTime().toString();
+			    						if(value.isSubscribed(player.getName()))
+			    							player.sendMessage("&a"+e); // green text
+			    						else
+			    							player.sendMessage("&f"+e);
+	    							}
+	    							else if(player.hasPermission("playtime.admins"))
+	    							{
+			    						String e = value.getName();
+			    						if(value.hasEnd())
+			    							e += " ending at "+ value.getEndTime().toString() + " (hidden)";
+			    						if(value.isSubscribed(player.getName()))
+			    							player.sendMessage("&a"+e); // green text
+			    						else
+			    							player.sendMessage("&f"+e);
+	    							}
 	    						}
 	    					}
 	    					player.sendMessage("");
@@ -995,14 +1064,23 @@ public class Playtime extends JavaPlugin implements Listener
 	    					{
 	    						if(!value.isActive() && value.hasStart())
 	    						{
-		    						String e = value.getName() + " starting on "+ parse.format(value.getStartTime().getTime());
-		    						// check for whether or not a player's voted for an event here.
-		    						player.sendMessage("&f"+e);
+	    							if(!value.isHidden())
+	    							{
+			    						String e = value.getName() + " starting at "+ value.getStartTime().toString();
+			    						// check for whether or not a player's voted for an event here.
+			    						player.sendMessage("&f"+e);
+	    							}
+	    							else if(player.hasPermission("playtime.admins"))
+	    							{
+			    						String e = value.getName() + " starting at "+ value.getStartTime().toString();
+			    						// check for whether or not a player's voted for an event here.
+			    						player.sendMessage("&f"+e);
+	    							}
 	    						}
 	    					}
 	    				}
 	    			}
-	    			else
+	    			else // server is using command
 	    			{
 		    			if(args.length >= 2)
 		    			{
@@ -1040,7 +1118,35 @@ public class Playtime extends JavaPlugin implements Listener
 		    				}
 		    				else if(args[1].equalsIgnoreCase("hidden"))
 		    				{
-		    					
+		    					log.info("- Hidden Events -");
+		    					log.info("- Current -");
+		    					for (final PlaytimeEvent value : map.values()) 
+		    					{
+		    						if(value.isHidden())
+		    						{
+			    						if(value.isActive())
+			    						{
+				    						String e = value.getName();
+				    						if(value.hasEnd())
+				    							e += " ending on "+ parse.format(value.getEndTime().getTime());
+				    						log.info(e);
+			    						}
+		    						}
+		    					}
+		    					log.info("");
+		    					log.info("- Upcoming -");
+		    					for (final PlaytimeEvent value : map.values()) 
+		    					{
+		    						if(value.isHidden())
+		    						{
+			    						if(!value.isActive() && value.hasStart())
+			    						{
+				    						String e = value.getName() + " starting on "+ parse.format(value.getStartTime().getTime());
+				    						// check for whether or not a player's voted for an event here.
+				    						log.info(e);
+			    						}
+		    						}
+		    					}
 		    				}
 		    			}
 	    				else
