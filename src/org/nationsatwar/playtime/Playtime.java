@@ -31,6 +31,57 @@ public class Playtime extends JavaPlugin implements Listener
 		log.info("Playtime has been enabled!");
 		
 		// set up loop checking for event starts and ends
+		// currently checks every 30 seconds. (20L = 1 second)
+		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
+		{
+			public void run() 
+			{
+				GregorianCalendar t = new GregorianCalendar();
+				for (final PlaytimeEvent value : map.values()) 
+				{					
+					// announcements
+					Player[] p = getServer().getOnlinePlayers();
+					for(int i = 0; i < p.length; i++)
+					{
+						if(p[i].isOnline())
+						{
+							if(value.getStartTime().after(t.getTime()) && !value.isActive())
+							{
+								// add IF statement here for people who've voted for the event
+								if(!value.isHidden())
+									p[i].sendMessage(value.getName() + " has started!");
+								// customisation of event announcement?
+							}
+							else if(value.getEndTime().after(t.getTime()))
+							{
+								p[i].sendMessage(value.getName() + "has finished!");
+								if(value.isSubscribed(p[i].getName()))
+									p[i].sendMessage("Thanks for taking part!"); // maybe remove this.
+							}
+						}
+					}
+					
+					//check for events reaching start-time
+					if(value.getStartTime().after(t.getTime()) && !value.isActive())
+					{
+						value.setActive(true);
+					}
+					else if(value.getEndTime().after(t.getTime()))
+					{
+						removeEvent(value.getName());
+					}
+				}
+			}
+		}, 600L);
+	}
+	
+	public void removeEvent(String eventName)
+	{
+		map.remove(eventName);
+		String path = "events."+eventName;
+		// remove event from config.yml
+		this.getConfig().set(path, null);
+		this.saveConfig();
 	}
 	
 	public void onDisable()
@@ -276,11 +327,7 @@ public class Playtime extends JavaPlugin implements Listener
 						    {
 		    					if(map.get(args[1]) != null) // if event with name is found
 		    					{
-		    						map.remove(args[1]);
-		    						String path = "events."+args[1];
-			    					// remove event from config.yml
-		    						this.getConfig().set(path, null);
-		    						this.saveConfig();
+		    						removeEvent(args[1]);
 		    						// message to player using command
 		    						// general message to players (subscribed to event?) that event has ended
 		    						player.sendMessage("Event '"+args[1]+"' successfully ended.");
@@ -298,10 +345,7 @@ public class Playtime extends JavaPlugin implements Listener
 		    				{
 		    					if(map.get(args[1]) != null)
 		    					{
-		    						map.remove(args[1]);
-		    						String path = "events."+args[1];
-		    						this.getConfig().set(path, null);
-		    						this.saveConfig();
+		    						removeEvent(args[1]);
 		        					// remove event from file
 		    						// general message to players (subscribed to event?) that event has ended
 		    						log.info("Event '"+args[1]+"' successfully ended.");

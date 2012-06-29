@@ -73,6 +73,11 @@ public class PlaytimeEvent
 			return false;
 	}
 	
+	public void setActive(boolean a)
+	{
+		active = a;
+	}
+	
 	public void setSpawn(Location l)
 	{
 		location = l;
