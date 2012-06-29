@@ -29,6 +29,8 @@ public class Playtime extends JavaPlugin implements Listener
 		getConfig();
 		readConfig();
 		log.info("Playtime has been enabled!");
+		
+		// set up loop checking for event starts and ends
 	}
 	
 	public void onDisable()
@@ -949,6 +951,13 @@ public class Playtime extends JavaPlugin implements Listener
 				    						else
 				    							player.sendMessage("&f"+e);
 		    							}
+		    							else if(value.isSubscribed(player.getName()))
+		    							{
+				    						String e = value.getName();
+				    						if(value.hasEnd())
+				    							e += " ending at "+ value.getEndTime().toString();
+		    								player.sendMessage("&a"+e); // green text
+		    							}
 		    							else if(player.hasPermission("playtime.admins"))
 		    							{
 				    						String e = value.getName();
@@ -1045,6 +1054,13 @@ public class Playtime extends JavaPlugin implements Listener
 			    							player.sendMessage("&a"+e); // green text
 			    						else
 			    							player.sendMessage("&f"+e);
+	    							}
+	    							else if(value.isSubscribed(player.getName()))
+	    							{
+			    						String e = value.getName();
+			    						if(value.hasEnd())
+			    							e += " ending at "+ value.getEndTime().toString();
+	    								player.sendMessage("&a"+e); // green text
 	    							}
 	    							else if(player.hasPermission("playtime.admins"))
 	    							{
