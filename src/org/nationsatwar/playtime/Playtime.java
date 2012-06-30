@@ -32,47 +32,63 @@ public class Playtime extends JavaPlugin implements Listener
 		
 		// set up loop checking for event starts and ends
 		// currently checks every 30 seconds. (20L = 1 second)
-		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() 
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable() 
 		{
 			public void run() 
 			{
 				GregorianCalendar t = new GregorianCalendar();
 				for (final PlaytimeEvent value : map.values()) 
-				{					
+				{
 					// announcements
 					Player[] p = getServer().getOnlinePlayers();
 					for(int i = 0; i < p.length; i++)
 					{
 						if(p[i].isOnline())
 						{
-							if(value.getStartTime().after(t.getTime()) && !value.isActive())
+							if(value.hasStart())
 							{
-								// add IF statement here for people who've voted for the event
-								if(!value.isHidden())
-									p[i].sendMessage(value.getName() + " has started!");
-								// customisation of event announcement?
+								if(value.getStartTime().after(t) && !value.isActive())
+								{
+									// add IF statement here for people who've voted for the event
+									if(!value.isHidden())
+										p[i].sendMessage(value.getName() + " has started!");
+									// customisation of event announcement?
+								}
 							}
-							else if(value.getEndTime().after(t.getTime()))
+							else if(value.hasEnd())
 							{
-								p[i].sendMessage(value.getName() + "has finished!");
-								if(value.isSubscribed(p[i].getName()))
-									p[i].sendMessage("Thanks for taking part!"); // maybe remove this.
+								if(value.getEndTime().after(t))
+								{
+									p[i].sendMessage(value.getName() + "has finished!");
+									if(value.isSubscribed(p[i].getName()))
+										p[i].sendMessage("Thanks for taking part!"); // maybe remove this.
+								}
 							}
 						}
 					}
 					
 					//check for events reaching start-time
-					if(value.getStartTime().after(t.getTime()) && !value.isActive())
+					if(value.hasEnd())
 					{
-						value.setActive(true);
+						if(t.after(value.getEndTime()) && value.isActive())
+						{
+							removeEvent(value.getName());
+							log.info(value.getName() + " ended!");
+						}
 					}
-					else if(value.getEndTime().after(t.getTime()))
+					
+					if(value.hasStart())
 					{
-						removeEvent(value.getName());
+						if(t.after(value.getStartTime()) && !value.isActive())
+						{
+							value.setActive(true);
+							log.info(value.getName() + " started!");
+						}
 					}
+					
 				}
 			}
-		}, 600L);
+		},20L,600L);
 	}
 	
 	public void removeEvent(String eventName)
@@ -524,17 +540,20 @@ public class Playtime extends JavaPlugin implements Listener
 			    						{
 				    						String[] time = args[4].split(":");
 				    						// how to turn this into a date?
-				    						GregorianCalendar cal = new GregorianCalendar(); // needs setting with correct timezone
+				    						GregorianCalendar cal = new GregorianCalendar(); 
 				    						// date/time format: <almiteycow>  YYYY-MM-DD HH:MM:SS TZ
-				    						// if no timezone is given, assume... UTC?
+				    						// if no timezone is given, assume server time
 				    						// year month day hour minute
+				    						
+				    						int m = Integer.parseInt(date[1])-1;
+				    						
 				    						if(time.length >= 3) // if seconds were specified
 				    						{
-				    							cal.set(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2]),Integer.parseInt(time[0]),Integer.parseInt(time[1]),Integer.parseInt(time[2]));
+				    							cal.set(Integer.parseInt(date[0]),m,Integer.parseInt(date[2]),Integer.parseInt(time[0]),Integer.parseInt(time[1]),Integer.parseInt(time[2]));
 				    						}
 				    						else // seconds weren't specified
 				    						{
-					    						cal.set(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2]),Integer.parseInt(time[0]),Integer.parseInt(time[1]));
+					    						cal.set(Integer.parseInt(date[0]),m,Integer.parseInt(date[2]),Integer.parseInt(time[0]),Integer.parseInt(time[1]));
 				    						}
 				    						
 				    						// if timezone provided, use that.
@@ -543,55 +562,112 @@ public class Playtime extends JavaPlugin implements Listener
 
 			    	    					String path = "events."+args[1]+".time.";
 			    	    					
-				    						if(args[2].equalsIgnoreCase("start"))
-				    						{
-				    							map.get(args[1]).setStartTime(cal);
-				    							this.getConfig().set(path+"start",cal.getTime());
-				    						}
-				    						else
-				    						{
-				    							map.get(args[1]).setEndTime(cal);
-				    							this.getConfig().set(path+"end",cal.getTime());
-				    						}
-				    							
-				    					    this.saveConfig();
+			    	    					if((player != null && player.hasPermission("playtime.admins")) || player == null)
+			    	    					{
+					    						if(args[2].equalsIgnoreCase("start"))
+					    						{
+					    							map.get(args[1]).setStartTime(cal);
+					    							this.getConfig().set(path+"start",cal.getTime());
+					    							if(player != null)
+					    								player.sendMessage(args[3] + " " + args[4] + " set as start time for event " + args[1]);
+					    							else
+					    								log.info(args[3] + " " + args[4] + " set as start time for event " + args[1]);
+					    						}
+					    						else
+					    						{
+					    							map.get(args[1]).setEndTime(cal);
+					    							this.getConfig().set(path+"end",cal.getTime());
+					    							if(player != null)
+					    								player.sendMessage(args[3] + " " + args[4] + " set as end time for event " + args[1]);
+					    							else
+					    								log.info(args[3] + " " + args[4] + " set as end time for event " + args[1]);
+					    						}
+					    						
+					    					    this.saveConfig();
+			    	    					}
+			    	    					else
+			    	    					{
+			    	    						player.sendMessage("You do not have permission to use this command.");
+			    	    					}
 			    						}
 			    						else
 			    						{
-			    							if(player != null)
-			    								player.sendMessage("Error: must provide recogniseable time.");
-			    							else
-			    								log.info("Error: must provide recogniseable time.");
+			    							if(player != null && player.hasPermission("playtime.admins"))
+			    								player.sendMessage("Error: must provide recogniseable time. Please use the format hh:mm or hh:mm:ss.");
+			    							else if(player == null)
+			    								log.info("Error: must provide recogniseable time. Please use the format hh:mm or hh:mm:ss.");
 			    							// error message: must provide recogniseable time
 			    						}
 		    						}
 		    						else
 		    						{
-		    							if(player != null)
-		    								player.sendMessage("Error: must provide recogniseable date.");
-		    							else
-		    								log.info("Error: must provide recogniseable date.");
+		    							if(player != null && player.hasPermission("playtime.admins"))
+		    								player.sendMessage("Error: must provide recogniseable date. Please use the format yyyy:mm:dd.");
+		    							else if(player == null)
+		    								log.info("Error: must provide recogniseable date. Please use the format yyyy:mm:dd.");
 		    							// error message: must provide recogniseable date and time
 		    						}
+		    					}
+		    					else if(args.length == 4) // 
+		    					{
+			    					if(args[3].equalsIgnoreCase("clear"))
+			    					{
+		    							if(player != null && player.hasPermission("playtime.admins"))
+		    							{
+					    					map.get(args[1]).unSetStart();
+					    					player.sendMessage(args[1] + " start time removed.");
+		    							}
+		    							else
+		    							{
+					    					map.get(args[1]).unSetStart();
+					    					log.info(args[1] + " start time removed.");
+		    							}
+			    					}
+			    					else if(args[3].equalsIgnoreCase("clear"))
+			    					{
+		    							if(player != null && player.hasPermission("playtime.admins"))
+		    							{
+				    						map.get(args[1]).unSetEnd();
+					    					player.sendMessage(args[1] + " start time removed.");
+		    							}
+		    							else
+		    							{
+				    						map.get(args[1]).unSetEnd();
+					    					log.info(args[1] + " start time removed.");
+		    							}
+			    					}
 		    					}
 		    					else // nothing was specified following 'start' or 'end'.
 		    					{
 		    						// help text
-		    						if(args[2].equalsIgnoreCase("start"))
+
+			    					if(args[2].equalsIgnoreCase("start"))
 		    						{
 		    							// helptext for start
 		    							if(player != null)
-		    								player.sendMessage("Usage: /event setTime [event] start yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+		    							{
+		    								player.sendMessage("Usage: /event setTime [event] start yyyy-mm-dd hh:mm:ss - specify date and time for start of event.");
+		    								player.sendMessage("Usage: /event setTime [event] start clear - unsets the named event's start time.");
+		    							}
 		    							else
-		    								log.info("Usage: /event setTime [event] start yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+		    							{
+		    								log.info("Usage: /event setTime [event] start yyyy-mm-dd hh:mm:ss - specify date and time for start of event.");
+		    								log.info("Usage: /event setTime [event] start clear - unsets the named event's start time.");
+		    							}
 		    						}
 		    						else if (args[2].equalsIgnoreCase("end"))
 		    						{
 		    							// helptext for end
 		    							if(player != null)
-		    								player.sendMessage("Usage: /event setTime [event] end yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+		    							{
+		    								player.sendMessage("Usage: /event setTime [event] end yyyy-mm-dd hh:mm:ss - specify date and time for end of event.");
+		    								player.sendMessage("Usage: /event setTime [event] end clear - unsets the named event's end time.");
+		    							}
 		    							else
-		    								log.info("Usage: /event setTime [event] end yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+		    							{
+		    								log.info("Usage: /event setTime [event] end yyyy-mm-dd hh:mm:ss - specify date and time for end of event.");
+		    								log.info("Usage: /event setTime [event] end clear - unsets the named event's end time.");
+		    							}
 		    						}
 		    						else
 		    						{
@@ -605,11 +681,29 @@ public class Playtime extends JavaPlugin implements Listener
 		    				}
 				    		if(args[2].equalsIgnoreCase("teleport"))
 				    		{
-				    			
+				    			// add later
 				    		}
 				    		else
 				    		{
 				    			// just used setTime validly; help text
+			    				if(player != null)
+			    				{
+									if(player.hasPermission("playtime.admins"))
+									{
+				    					player.sendMessage("Usage: /event setTime [event] [start/end] yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+				    					player.sendMessage("Usage: /event setTime [event] [start/end] yyyy-mm-dd hh:mm - specify date and time for start or end of event.");
+				    					//player.sendMessage("Usage: /event setTime [event] teleport [seconds] - specifies time in seconds until subscribed players are teleported to spawn.");
+									}
+									else
+										player.sendMessage("You do not have permission to use this command.");
+			    				}
+			    				else
+			    				{
+
+			    					log.info("Usage: /event setTime [event] [start/end] yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
+			    					log.info("Usage: /event setTime [event] [start/end] yyyy-mm-dd hh:mm - specify date and time for start or end of event.");
+			    					//log.info("Usage: /event setTime [event] teleport [seconds] - specifies time in seconds until subscribed players are teleported to spawn.");
+			    				}
 				    		}
 		    			}
 					}
@@ -622,7 +716,7 @@ public class Playtime extends JavaPlugin implements Listener
 							{
 		    					player.sendMessage("Usage: /event setTime [event] [start/end] yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
 		    					player.sendMessage("Usage: /event setTime [event] [start/end] xx:yy:zz - specify time only, assumes current date.");
-		    					player.sendMessage("Usage: /event setTime [event] teleport [seconds] - specifies time in seconds until subscribed players are teleported to spawn.");
+		    					//player.sendMessage("Usage: /event setTime [event] teleport [seconds] - specifies time in seconds until subscribed players are teleported to spawn.");
 							}
 							else
 								player.sendMessage("You do not have permission to use this command.");
@@ -632,7 +726,7 @@ public class Playtime extends JavaPlugin implements Listener
 
 	    					log.info("Usage: /event setTime [event] [start/end] yyyy-mm-dd hh:mm:ss - specify date and time for start or end of event.");
 	    					log.info("Usage: /event setTime [event] [start/end] xx:yy:zz - specify time only, assumes current date.");
-	    					log.info("Usage: /event setTime [event] teleport [seconds] - specifies time in seconds until subscribed players are teleported to spawn.");
+	    					//log.info("Usage: /event setTime [event] teleport [seconds] - specifies time in seconds until subscribed players are teleported to spawn.");
 	    				}
 	    			}
 	    			return true;
@@ -1040,7 +1134,20 @@ public class Playtime extends JavaPlugin implements Listener
 		    				}
 		    				else if(args[1].equalsIgnoreCase("inactive"))
 		    				{
-		    					
+		    					if(player.hasPermission("playtime.admins"))
+		    					{
+			    					player.sendMessage("- Inactive Events -");
+			    					for (final PlaytimeEvent value : map.values())
+			    					{
+			    						if(!value.isActive())
+			    						{
+				    						String e = value.getName();
+				    						if(value.hasStart())
+				    							e += " starting on "+ parse.format(value.getStartTime().getTime());
+				    						player.sendMessage(e);
+			    						}
+			    					}
+		    					}
 		    				}
 		    				else if(args[1].equalsIgnoreCase("hidden"))
 		    				{
@@ -1174,7 +1281,17 @@ public class Playtime extends JavaPlugin implements Listener
 		    				}
 		    				else if(args[1].equalsIgnoreCase("inactive"))
 		    				{
-		    					
+		    					log.info("- Inactive Events -");
+		    					for (final PlaytimeEvent value : map.values())
+		    					{
+		    						if(!value.isActive())
+		    						{
+			    						String e = value.getName();
+			    						if(value.hasStart())
+			    							e += " starting on "+ parse.format(value.getStartTime().getTime());
+			    						log.info(e);
+		    						}
+		    					}
 		    				}
 		    				else if(args[1].equalsIgnoreCase("hidden"))
 		    				{

@@ -119,6 +119,16 @@ public class PlaytimeEvent
 		end = c;
 	}
 	
+	public void unSetStart()
+	{
+		start = null;
+	}
+	
+	public void unSetEnd()
+	{
+		end = null;
+	}
+	
 	public GregorianCalendar getEndTime()
 	{
 		return end;
