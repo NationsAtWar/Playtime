@@ -22,10 +22,6 @@ public class PlaytimeEvent
 	//int secondsToTeleport;
 	//int allowedRespawns ?
 	
-	// Store start time, store end time.
-	// don't allow advance subscribing
-	// event should announce itself when it starts, if not hidden
-	
 	public PlaytimeEvent(String n)
 	{
 		name = n;
@@ -71,6 +67,13 @@ public class PlaytimeEvent
 			return true;
 		else
 			return false;
+	}
+	
+	public boolean hasSpawn()
+	{
+		if(location != null || player != null)
+			return true;
+		return false;
 	}
 	
 	public void setActive(boolean a)

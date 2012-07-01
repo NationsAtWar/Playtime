@@ -3,6 +3,7 @@ package org.nationsatwar.playtime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.bukkit.Location;
@@ -18,8 +19,36 @@ public class Playtime extends JavaPlugin implements Listener
 {
 	Logger log;
 	HashMap<String, PlaytimeEvent> map;
-	PlaytimeEvent temp;
+	PlaytimeEvent temp; 
 	
+	public static String getDurationBreakdown(long millis)
+    {
+		if(millis < 0)
+		{
+			throw new IllegalArgumentException("Duration must be greater than zero!");
+		}
+
+		long days = TimeUnit.MILLISECONDS.toDays(millis);
+		millis -= TimeUnit.DAYS.toMillis(days);
+		long hours = TimeUnit.MILLISECONDS.toHours(millis);
+		millis -= TimeUnit.HOURS.toMillis(hours);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+		millis -= TimeUnit.MINUTES.toMillis(minutes);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+		
+		StringBuilder sb = new StringBuilder(64);
+		sb.append(days);
+		sb.append(" days, ");
+		sb.append(hours);
+		sb.append(" hours, ");
+		sb.append(minutes);
+		sb.append(" minutes, ");
+		sb.append(seconds);
+		sb.append(" seconds");
+		
+		return(sb.toString());
+    }
+
 	public void onEnable()
 	{
 		// read external file for current event stuff
@@ -735,7 +764,7 @@ public class Playtime extends JavaPlugin implements Listener
 	    		{
 					if(args.length >= 2) // if event name has been provided
 					{
-						if(map.get(args[1]) != null) // if event is valid
+						if(map.get(args[1]) != null && map.get(args[1]).isActive()) // if event is valid
 						{
 			    			if(player != null)
 			    			{
@@ -907,11 +936,11 @@ public class Playtime extends JavaPlugin implements Listener
 						{
 							if (player != null)
 							{
-								player.sendMessage("Error: " + args[1] + " is not a valid event");
+								player.sendMessage("Error: " + args[1] + " is not a valid, active event");
 							}
 							else
 							{
-								log.info("Error: " + args[1] + " is not a valid event");
+								log.info("Error: " + args[1] + " is not a valid, active event");
 							}
 						}
 					}
@@ -942,7 +971,7 @@ public class Playtime extends JavaPlugin implements Listener
     						if(args.length >= 3) // if a name has been provided, admin wants to unsubscribe player from event
     						{
     							Player p = null;
-    							p = getServer().getPlayer(args[2]);
+    							p = getServer().getPlayer(args[2]); // this doesn't work for offline players
 	    						if(p != null)
 	    						{
 	    							boolean s = false;
@@ -954,6 +983,21 @@ public class Playtime extends JavaPlugin implements Listener
 		    								
 			    	    					String path = "events."+args[1]+".";
 			    	    					this.getConfig().set(path+"subscribers."+p.getName(),null);
+			    	    					this.saveConfig();
+			    	    					
+			    	    					// if there are no subscribers, remove subscribers
+			    	    					Set<String> subKeys = this.getConfig().getConfigurationSection(path+"subscribers").getKeys(false);
+			    	    					Iterator<String> c = subKeys.iterator();
+			    	    					int count = 0;
+			    	    					
+			    	    					while(c.hasNext())
+			    	    					{
+			    	    						count++;
+			    	    					}
+
+			    	    					if(count == 0)
+			    	    						this.getConfig().set(path+"subscribers",null);
+			    	    					
 				    					    this.saveConfig();
 				    					    
 		    								player.sendMessage(p.getName() + " unsubscribed from event " + t.getName());
@@ -978,8 +1022,25 @@ public class Playtime extends JavaPlugin implements Listener
 	    						{
 	    							if(t.isSubscribed(player.getName()))
 	    							{
+	    								t.unsubscribe(player);
+	    								
 		    	    					String path = "events."+t.getName()+".";
 		    	    					this.getConfig().set(path+"subscribers."+player.getName(),null);
+			    					    this.saveConfig();
+			    					    
+		    	    					// if there are no subscribers, remove subscribers
+		    	    					Set<String> subKeys = this.getConfig().getConfigurationSection(path+"subscribers").getKeys(false);
+		    	    					Iterator<String> c = subKeys.iterator();
+		    	    					int count = 0;
+		    	    					
+		    	    					while(c.hasNext())
+		    	    					{
+		    	    						count++;
+		    	    					}
+
+		    	    					if(count == 0)
+		    	    						this.getConfig().set(path+"subscribers",null);
+		    	    					
 			    					    this.saveConfig();
 			    					    
 	    								player.sendMessage("You have unsubscribed from event " + t.getName());
@@ -1000,21 +1061,28 @@ public class Playtime extends JavaPlugin implements Listener
     							if(t.isSubscribed(player.getName()))
     							{
     								t.unsubscribe(player);
-    								if(args.length >= 2)
-    								{
-		    	    					String path = "events."+args[1]+".";
-		    	    					this.getConfig().set(path+"subscribers."+player.getName(),null);
-			    					    this.saveConfig();
-			    					    
-	    								player.sendMessage("You have unsubscribed from event " + t.getName());
-	    								s = true;
-    								}
-    								else
-    								{
-    									// else if player is subscribed to an event and doesn't name it
-    									// check if subscribed to multiple, require event name to unsubscribe.
-    									// if only subscribed to one event, unsubscribe from it.
-    								}
+    								
+	    	    					String path = "events."+t.getName()+".";
+	    	    					this.getConfig().set(path+"subscribers."+player.getName(),null);
+		    					    this.saveConfig();
+		    					    
+	    	    					// if there are no subscribers, remove subscribers
+	    	    					Set<String> subKeys = this.getConfig().getConfigurationSection(path+"subscribers").getKeys(false);
+	    	    					Iterator<String> c = subKeys.iterator();
+	    	    					int count = 0;
+	    	    					
+	    	    					while(c.hasNext())
+	    	    					{
+	    	    						count++;
+	    	    					}
+	    	    					
+	    	    					if(count == 0)
+	    	    						this.getConfig().set(path+"subscribers",null);
+	    	    					
+		    					    this.saveConfig();
+		    					    
+    								player.sendMessage("You have unsubscribed from event " + t.getName());
+    								s = true;
     							}
     						}
     						if(!s)
@@ -1043,6 +1111,21 @@ public class Playtime extends JavaPlugin implements Listener
 		    	    					this.getConfig().set(path+"subscribers."+p.getName(),null);
 			    					    this.saveConfig();
 			    					    
+		    	    					// if there are no subscribers, remove subscribers
+		    	    					Set<String> subKeys = this.getConfig().getConfigurationSection(path+"subscribers").getKeys(false);
+		    	    					Iterator<String> c = subKeys.iterator();
+		    	    					int count = 0;
+		    	    					
+		    	    					while(c.hasNext())
+		    	    					{
+		    	    						count++;
+		    	    					}
+		    	    					
+		    	    					if(count == 0)
+		    	    						this.getConfig().set(path+"subscribers",null);
+		    	    					
+			    					    this.saveConfig();
+			    					    
 	    								log.info(p.getName() + " unsubscribed from event " + t.getName());
 	    								p.sendMessage("You have been unsubscribed from event " + t.getName() + " by server");
 	    								s = true;
@@ -1065,6 +1148,158 @@ public class Playtime extends JavaPlugin implements Listener
 	    			}
 	    			return true;
 	    		}
+	    		else if(args[0].equalsIgnoreCase("info"))
+	    		{
+	    			if(args.length >= 2)
+	    			{
+	    				if(map.get(args[1]) != null)
+	    				{
+	    					PlaytimeEvent e = map.get(args[1]);
+	    					GregorianCalendar now = new GregorianCalendar();
+	    					SimpleDateFormat convert = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+	    					long l;
+	    					if(player != null)
+	    					{
+	    						player.sendMessage("- " + e.getName() + " -");
+	    						if(e.isActive())
+	    							player.sendMessage("Currently active.");
+	    						else
+	    							player.sendMessage("Currently inactive.");
+	    						
+	    						if(e.isHidden())
+	    							player.sendMessage("Hidden.");
+	    						
+	    						if(e.hasStart())
+		    						if(e.isActive())
+		    							player.sendMessage("Started on " + convert.format(e.getStartTime().getTime()));
+		    						else
+		    						{
+		    							l = e.getStartTime().getTimeInMillis() - now.getTimeInMillis();
+		    							player.sendMessage("Starting in " + getDurationBreakdown(l) + " on " + convert.format(e.getStartTime().getTime()) + ".");
+		    						}
+	    						
+	    						if(e.hasEnd())
+	    						{
+	    							l = now.getTimeInMillis() - e.getEndTime().getTimeInMillis();
+	    							player.sendMessage("Ending in " + getDurationBreakdown(l) + " on " + convert.format(e.getStartTime().getTime()) + ".");
+	    						}
+	    						
+	    						// permission-people only?
+	    						if(e.hasSpawn())
+	    						{
+	    							// probably bad practice, directly accessing these; write something in PlaytimeEvent later for it.
+	    							if(e.location != null)
+	    							{
+	    								player.sendMessage("Spawn: location");
+	    								if(player.hasPermission("playtime.admins"))
+	    								{
+	    									player.sendMessage("x: " + e.location.getX());
+	    									player.sendMessage("y: " + e.location.getY());
+	    									player.sendMessage("z: " + e.location.getZ());
+	    								}
+	    							}
+	    							else if(e.player != null)
+	    							{
+
+	    								if(player.hasPermission("playtime.admins"))
+	    									player.sendMessage("Spawn: player, " + e.player);
+	    								else
+	    									player.sendMessage("Spawn: player");
+	    							}
+	    						}
+	    						else
+	    						{
+	    							player.sendMessage("Spawn: none");
+	    						}
+	    						
+	    						if(player.hasPermission("playtime.admins"))
+	    						{
+		    						if(this.getConfig().getConfigurationSection("events."+e.getName()+".subscribers") != null)
+		    						{
+		    							player.sendMessage("Subscribers:");
+		    							Set<String> subKeys = this.getConfig().getConfigurationSection("events."+e.getName()+".subscribers").getKeys(false);
+		    							Iterator<String> s = subKeys.iterator();
+		    							String subscriber;
+		    							
+		    							do
+		    							{
+		    								subscriber = (String) s.next();
+		    								player.sendMessage(subscriber);
+		    							}while(s.hasNext());
+		    						}
+		    						else
+		    							player.sendMessage("No subscribers.");
+	    						}
+	    					}
+	    					else // user is server
+	    					{
+	    						log.info("- " + e.getName() + " -");
+	    						if(e.isActive())
+	    							log.info("Currently active.");
+	    						else
+	    							log.info("Currently inactive.");
+	    						
+	    						if(e.isHidden())
+	    							log.info("Hidden.");
+	    						
+	    						if(e.hasStart())
+		    						if(e.isActive())
+		    							log.info("Started on " + convert.format(e.getStartTime().getTime()));
+		    						else
+		    						{
+		    							l = e.getStartTime().getTimeInMillis() - now.getTimeInMillis();
+		    							log.info("Starting in " + getDurationBreakdown(l) + " on " + convert.format(e.getStartTime().getTime()) + ".");
+		    						}
+	    						
+	    						if(e.hasEnd())
+	    						{
+	    							l = now.getTimeInMillis() - e.getEndTime().getTimeInMillis();
+		    						log.info("Ending in " + getDurationBreakdown(l) + " on " + convert.format(e.getStartTime().getTime()) + ".");
+	    						}
+	    						
+	    						// permission-people only?
+	    						if(e.hasSpawn())
+	    						{
+	    							// probably bad practice, directly accessing these; write something in PlaytimeEvent later for it.
+	    							if(e.location != null)
+	    							{
+	    								log.info("Spawn: location");
+	    								// if(player.hasPermission("playtime.admins")
+	    								log.info("x: " + e.location.getX());
+	    								log.info("y: " + e.location.getY());
+	    								log.info("z: " + e.location.getZ());
+	    							}
+	    							else if(e.player != null)
+	    							{
+
+	    								// if(player.hasPermission("playtime.admins")
+	    								log.info("Spawn: player, " + e.player);
+	    							}
+	    						}
+	    						else
+	    						{
+	    							log.info("Spawn: none");
+	    						}
+	    						
+	    						if(this.getConfig().getConfigurationSection("events."+e.getName()+".subscribers") != null)
+	    						{
+	    							log.info("Subscribers:");
+	    							Set<String> subKeys = this.getConfig().getConfigurationSection("events."+e.getName()+".subscribers").getKeys(false);
+	    							Iterator<String> s = subKeys.iterator();
+	    							String subscriber;
+	    							
+	    							do
+	    							{
+	    								subscriber = (String) s.next();
+	    								log.info(subscriber);
+	    							}while(s.hasNext());
+	    						}
+	    						else
+	    							log.info("No subscribers.");
+	    					}
+	    				}
+	    			}
+	    		}
 	    		else if(args[0].equalsIgnoreCase("list"))
 	    		{
 					SimpleDateFormat parse = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
@@ -1083,7 +1318,7 @@ public class Playtime extends JavaPlugin implements Listener
 		    							{
 				    						String e = value.getName();
 				    						if(value.hasEnd())
-				    							e += " ending at "+ value.getEndTime().toString();
+				    							e += " ending at "+ parse.format(value.getEndTime().getTime());
 				    						if(value.isSubscribed(player.getName()))
 				    							player.sendMessage("&a"+e); // green text
 				    						else
@@ -1093,14 +1328,14 @@ public class Playtime extends JavaPlugin implements Listener
 		    							{
 				    						String e = value.getName();
 				    						if(value.hasEnd())
-				    							e += " ending at "+ value.getEndTime().toString();
+				    							e += " ending at "+ parse.format(value.getEndTime().getTime());
 		    								player.sendMessage("&a"+e); // green text
 		    							}
 		    							else if(player.hasPermission("playtime.admins"))
 		    							{
 				    						String e = value.getName();
 				    						if(value.hasEnd())
-				    							e += " ending at "+ value.getEndTime().toString() + " (hidden)";
+				    							e += " ending at "+ parse.format(value.getEndTime().getTime()) + " (hidden)";
 				    						if(value.isSubscribed(player.getName()))
 				    							player.sendMessage("&a"+e); // green text
 				    						else
@@ -1118,13 +1353,13 @@ public class Playtime extends JavaPlugin implements Listener
 		    						{
 		    							if(!value.isHidden())
 		    							{
-				    						String e = value.getName() + " starting at "+ value.getStartTime().toString();
+				    						String e = value.getName() + " starting at "+ parse.format(value.getStartTime().getTime());
 				    						// check for whether or not a player's voted for an event here.
 				    						player.sendMessage("&f"+e);
 		    							}
 		    							else if(player.hasPermission("playtime.admins"))
 		    							{
-				    						String e = value.getName() + " starting at "+ value.getStartTime().toString();
+				    						String e = value.getName() + " starting at "+ parse.format(value.getStartTime().getTime());
 				    						// check for whether or not a player's voted for an event here.
 				    						player.sendMessage("&f"+e);
 		    							}
@@ -1200,7 +1435,7 @@ public class Playtime extends JavaPlugin implements Listener
 	    							{
 			    						String e = value.getName();
 			    						if(value.hasEnd())
-			    							e += " ending at "+ value.getEndTime().toString();
+			    							e += " ending at "+ parse.format(value.getEndTime().getTime());
 			    						if(value.isSubscribed(player.getName()))
 			    							player.sendMessage("&a"+e); // green text
 			    						else
@@ -1210,14 +1445,14 @@ public class Playtime extends JavaPlugin implements Listener
 	    							{
 			    						String e = value.getName();
 			    						if(value.hasEnd())
-			    							e += " ending at "+ value.getEndTime().toString();
+			    							e += " ending at "+ parse.format(value.getEndTime().getTime());
 	    								player.sendMessage("&a"+e); // green text
 	    							}
 	    							else if(player.hasPermission("playtime.admins"))
 	    							{
 			    						String e = value.getName();
 			    						if(value.hasEnd())
-			    							e += " ending at "+ value.getEndTime().toString() + " (hidden)";
+			    							e += " ending at "+ parse.format(value.getEndTime().getTime()) + " (hidden)";
 			    						if(value.isSubscribed(player.getName()))
 			    							player.sendMessage("&a"+e); // green text
 			    						else
@@ -1233,13 +1468,13 @@ public class Playtime extends JavaPlugin implements Listener
 	    						{
 	    							if(!value.isHidden())
 	    							{
-			    						String e = value.getName() + " starting at "+ value.getStartTime().toString();
+			    						String e = value.getName() + " starting at "+ parse.format(value.getStartTime().getTime());
 			    						// check for whether or not a player's voted for an event here.
 			    						player.sendMessage("&f"+e);
 	    							}
 	    							else if(player.hasPermission("playtime.admins"))
 	    							{
-			    						String e = value.getName() + " starting at "+ value.getStartTime().toString();
+			    						String e = value.getName() + " starting at "+ parse.format(value.getStartTime().getTime());
 			    						// check for whether or not a player's voted for an event here.
 			    						player.sendMessage("&f"+e);
 	    							}
