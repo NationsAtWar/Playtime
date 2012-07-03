@@ -19,6 +19,7 @@ public class PlaytimeEvent
 	boolean active;
 	boolean hidden;
 	//boolean teleportOnJoin;
+	//boolean killOnJoin
 	//int secondsToTeleport;
 	//int allowedRespawns ?
 	
@@ -130,6 +131,12 @@ public class PlaytimeEvent
 	public void unSetEnd()
 	{
 		end = null;
+	}
+	
+	public void unSetSpawn()
+	{
+		player = null;
+		location = null;
 	}
 	
 	public GregorianCalendar getEndTime()
