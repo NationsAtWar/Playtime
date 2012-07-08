@@ -1,4 +1,14 @@
 name: Playtime
 main: org.nationsatwar.playtime.Playtime
-version: 0.1
+version: 1.0.0
 author: Feldherren
+
+permissions:
+  playtime.admins:
+    description: Allows user to create and end events, and set event spawn locations.
+    default: op
+
+commands:
+  event:
+    description: Playtime super command
+    usage: /event
