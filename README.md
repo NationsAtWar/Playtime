@@ -5,15 +5,12 @@ Event Spawning v1.0.0
 
 Create events with set spawn locations; subscribed players will be teleported to those locations upon respawn, rather than staying at their normal spawnpoint.
 
-========
 Commands
 ========
 
 *-marked commands work from the server, too
 
---------------
 Admin Commands
---------------
 
 /event create [name]*
 Creates an event with the given name. One word only.
@@ -42,9 +39,8 @@ Sets an event to start or end at the specified time. May omit seconds. The serve
 /event setTime [start/end] [event] clear*
 Removes start or end time from an event.
 
----------------
+
 Player Commands
----------------
 
 /event [subscribe/sub] [event]
 Subscribes yourself to the named event.
