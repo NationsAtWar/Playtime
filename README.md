@@ -11,6 +11,7 @@ Commands
 *-marked commands work from the server, too
 
 Admin Commands
+--------------
 
 /event create [name]*
 Creates an event with the given name. One word only.
@@ -41,6 +42,7 @@ Removes start or end time from an event.
 
 
 Player Commands
+---------------
 
 /event [subscribe/sub] [event]
 Subscribes yourself to the named event.
