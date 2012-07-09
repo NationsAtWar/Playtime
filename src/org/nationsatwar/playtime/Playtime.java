@@ -595,6 +595,7 @@ public class Playtime extends JavaPlugin implements Listener
 			    	    					{
 					    						if(args[2].equalsIgnoreCase("start"))
 					    						{
+					    							// check to make sure this isn't after any already-set End time
 					    							map.get(args[1]).setStartTime(cal);
 					    							this.getConfig().set(path+"start",cal.getTime());
 					    							if(player != null)
@@ -602,8 +603,9 @@ public class Playtime extends JavaPlugin implements Listener
 					    							else
 					    								log.info(args[3] + " " + args[4] + " set as start time for event " + args[1]);
 					    						}
-					    						else
+					    						else // it was end, as we already checked for that.
 					    						{
+					    							// check to make sure this isn't before any already-set Start time
 					    							map.get(args[1]).setEndTime(cal);
 					    							this.getConfig().set(path+"end",cal.getTime());
 					    							if(player != null)
