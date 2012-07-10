@@ -1,7 +1,7 @@
 Playtime
 ========
 
-Event Spawning v1.0.0
+Event Spawning v1.0.1
 
 Create events with set spawn locations; subscribed players will be teleported to those locations upon respawn, rather than staying at their normal spawnpoint.
 
@@ -34,10 +34,10 @@ Subscribes someone else to the named event.
 /event [unsubscribe/unsub] [event] [player]*
 Unsubscribes the named player from the named event, if they're subscribed to it
 
-/event setTime [start/end] [event] yyyy-mm-dd hh:mm:ss*
+/event setTime [event] [start/end] yyyy-mm-dd hh:mm:ss*
 Sets an event to start or end at the specified time. May omit seconds. The server currently checks every 30 seconds whether or not an event should begin or end, and all times need to match server time.
 
-/event setTime [start/end] [event] clear*
+/event setTime [event] [start/end] clear*
 Removes start or end time from an event.
 
 

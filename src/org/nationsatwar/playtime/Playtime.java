@@ -596,22 +596,70 @@ public class Playtime extends JavaPlugin implements Listener
 					    						if(args[2].equalsIgnoreCase("start"))
 					    						{
 					    							// check to make sure this isn't after any already-set End time
-					    							map.get(args[1]).setStartTime(cal);
-					    							this.getConfig().set(path+"start",cal.getTime());
-					    							if(player != null)
-					    								player.sendMessage(args[3] + " " + args[4] + " set as start time for event " + args[1]);
+					    							if(map.get(args[1]).getEndTime() != null)
+					    							{
+						    							if(cal.before(map.get(args[1]).getEndTime()))
+						    							{
+							    							map.get(args[1]).setStartTime(cal);
+							    							this.getConfig().set(path+"start",cal.getTime());
+							    							if(player != null)
+							    								player.sendMessage(args[3] + " " + args[4] + " set as start time for event " + args[1]);
+							    							else
+							    								log.info(args[3] + " " + args[4] + " set as start time for event " + args[1]);
+						    							}
+						    							else
+						    							{
+						    								// error; start can't be after end
+							    							if(player != null)
+							    								player.sendMessage("Error: given start time is after an already-set end time.");
+							    							else
+							    								log.info("Error: given start time is after an already-set end time.");
+						    							}
+					    							}
 					    							else
-					    								log.info(args[3] + " " + args[4] + " set as start time for event " + args[1]);
+					    							{
+					    								// no time to conflict with
+						    							map.get(args[1]).setStartTime(cal);
+						    							this.getConfig().set(path+"start",cal.getTime());
+						    							if(player != null)
+						    								player.sendMessage(args[3] + " " + args[4] + " set as start time for event " + args[1]);
+						    							else
+						    								log.info(args[3] + " " + args[4] + " set as start time for event " + args[1]);
+					    							}
 					    						}
 					    						else // it was end, as we already checked for that.
 					    						{
 					    							// check to make sure this isn't before any already-set Start time
-					    							map.get(args[1]).setEndTime(cal);
-					    							this.getConfig().set(path+"end",cal.getTime());
-					    							if(player != null)
-					    								player.sendMessage(args[3] + " " + args[4] + " set as end time for event " + args[1]);
+					    							if(map.get(args[1]).getStartTime() != null)
+					    							{
+						    							if(cal.after(map.get(args[1]).getStartTime()))
+						    							{
+							    							map.get(args[1]).setEndTime(cal);
+							    							this.getConfig().set(path+"end",cal.getTime());
+							    							if(player != null)
+							    								player.sendMessage(args[3] + " " + args[4] + " set as end time for event " + args[1]);
+							    							else
+							    								log.info(args[3] + " " + args[4] + " set as end time for event " + args[1]);
+						    							}
+						    							else
+						    							{
+						    								// error; end can't be before start
+							    							if(player != null)
+							    								player.sendMessage("Error: given end time is before an already-set start time.");
+							    							else
+							    								log.info("Error: given end time is before an already-set start time.");
+						    							}
+					    							}
 					    							else
-					    								log.info(args[3] + " " + args[4] + " set as end time for event " + args[1]);
+					    							{
+					    								// no time to conflict with
+						    							map.get(args[1]).setEndTime(cal);
+						    							this.getConfig().set(path+"end",cal.getTime());
+						    							if(player != null)
+						    								player.sendMessage(args[3] + " " + args[4] + " set as end time for event " + args[1]);
+						    							else
+						    								log.info(args[3] + " " + args[4] + " set as end time for event " + args[1]);
+					    							}
 					    						}
 					    						
 					    					    this.saveConfig();
@@ -639,39 +687,41 @@ public class Playtime extends JavaPlugin implements Listener
 		    							// error message: must provide recogniseable date and time
 		    						}
 		    					}
-		    					else if(args.length == 4) // 
+		    					else if(args.length >= 4)
 		    					{
-			    					if(args[3].equalsIgnoreCase("clear"))
-			    					{
-		    							if(player != null && player.hasPermission("playtime.admins"))
-		    							{
-					    					map.get(args[1]).unSetStart();
-					    					player.sendMessage(args[1] + " start time removed.");
-		    							}
-		    							else
-		    							{
-					    					map.get(args[1]).unSetStart();
-					    					log.info(args[1] + " start time removed.");
-		    							}
-			    					}
-			    					else if(args[3].equalsIgnoreCase("clear"))
-			    					{
-		    							if(player != null && player.hasPermission("playtime.admins"))
-		    							{
-				    						map.get(args[1]).unSetEnd();
-					    					player.sendMessage(args[1] + " start time removed.");
-		    							}
-		    							else
-		    							{
-				    						map.get(args[1]).unSetEnd();
-					    					log.info(args[1] + " start time removed.");
-		    							}
-			    					}
+		    						if(args[3].equalsIgnoreCase("clear"))
+		    						{
+				    					if(args[2].equalsIgnoreCase("start"))
+				    					{
+			    							if(player != null && player.hasPermission("playtime.admins"))
+			    							{
+						    					map.get(args[1]).unSetStart();
+						    					player.sendMessage(args[1] + " start time removed.");
+			    							}
+			    							else
+			    							{
+						    					map.get(args[1]).unSetStart();
+						    					log.info(args[1] + " start time removed.");
+			    							}
+				    					}
+				    					else if(args[2].equalsIgnoreCase("end"))
+				    					{
+			    							if(player != null && player.hasPermission("playtime.admins"))
+			    							{
+					    						map.get(args[1]).unSetEnd();
+						    					player.sendMessage(args[1] + " end time removed.");
+			    							}
+			    							else
+			    							{
+					    						map.get(args[1]).unSetEnd();
+						    					log.info(args[1] + " end time removed.");
+			    							}
+				    					}
+		    						}
 		    					}
 		    					else // nothing was specified following 'start' or 'end'.
 		    					{
 		    						// help text
-
 			    					if(args[2].equalsIgnoreCase("start"))
 		    						{
 		    							// helptext for start
@@ -710,7 +760,7 @@ public class Playtime extends JavaPlugin implements Listener
 		    						}
 		    					}
 		    				}
-				    		if(args[2].equalsIgnoreCase("teleport"))
+		    				else if(args[2].equalsIgnoreCase("teleport"))
 				    		{
 				    			// add later
 				    		}
