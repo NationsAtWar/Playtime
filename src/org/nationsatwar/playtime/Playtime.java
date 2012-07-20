@@ -419,7 +419,54 @@ public class Playtime extends JavaPlugin implements Listener
 					}
 					return true;
 	    		}
-	    		else if(args[0].equalsIgnoreCase("setspawn"))
+	    		else if(args[0].equalsIgnoreCase("setDesc"))
+	    		{
+					if(args.length >= 2) // event name
+					{
+		    			if(player != null) // user is player
+		    			{
+			    			if(player.hasPermission("playtime.admins"))
+						    {
+		    					if(map.get(args[1]) != null) // if event with name is found
+		    					{
+		    						if(args.length >= 3) // if there's actually something to put in the desc
+		    						{
+					    				String desc = null;
+					    				for(int i = 2; i < args.length; i++)
+					    				{
+					    					if(i != 2)
+					    						desc = desc + " " + args[i];
+					    					else
+					    						desc = args[i];
+					    				}
+					    				map.get(args[1]).setDesc(desc);
+		    						}
+		    						else
+		    						{
+		    							// erase desc
+		    						}
+		    					}
+		    					else
+		    					{
+		    						// error: must be valid event
+		    					}
+						    }
+			    			else
+			    			{
+			    				// error: need permissions
+			    			}
+		    			}
+		    			else // user is server
+		    			{
+		    				
+		    			}
+		    		}
+					else
+					{
+						// help text
+					}
+	    		}
+	    		else if(args[0].equalsIgnoreCase("setSpawn"))
 	    		{
 					if(args.length >= 2) // event name
 					{

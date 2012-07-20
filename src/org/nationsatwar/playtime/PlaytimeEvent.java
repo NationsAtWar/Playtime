@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 public class PlaytimeEvent 
 {
 	String name;
+	String desc;
 	Location location;
 	String player;
 	HashMap<String, Location> subscribed;
@@ -29,6 +30,7 @@ public class PlaytimeEvent
 		hidden = false;
 		subscribed = new HashMap<String, Location>();
 		active = false;
+		desc = null;
 	}
 	
 	public PlaytimeEvent(String n, boolean h)
@@ -37,11 +39,17 @@ public class PlaytimeEvent
 		hidden = h;
 		subscribed = new HashMap<String, Location>();
 		active = false;
+		desc = null;
 	}
 	
 	public String getName()
 	{
 		return name;
+	}
+	
+	public String getDesc()
+	{
+		return desc;
 	}
 	
 	public boolean isActive()
@@ -80,6 +88,11 @@ public class PlaytimeEvent
 	public void setActive(boolean a)
 	{
 		active = a;
+	}
+	
+	public void setDesc(String d)
+	{
+		desc = d;
 	}
 	
 	public void setSpawn(Location l)
