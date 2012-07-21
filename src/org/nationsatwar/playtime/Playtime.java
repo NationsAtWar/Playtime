@@ -175,7 +175,7 @@ public class Playtime extends JavaPlugin implements Listener
 				
 				// get basic event from config.yml
 				temp = new PlaytimeEvent(eventName,this.getConfig().getBoolean(path+"hidden"));
-				log.info("Loading event '"+eventName+"'");
+				//log.info("Loading event '"+eventName+"'");
 				
 				// get spawn data
 				if(this.getConfig().getString(path+"spawn") != null)
@@ -203,7 +203,7 @@ public class Playtime extends JavaPlugin implements Listener
 					do
 					{
 						subscriber = (String) s.next();
-						log.info("Adding player '"+subscriber+"'");
+						//log.info("Adding player '"+subscriber+"'");
 						String sPath = "events."+eventName+".subscribers."+subscriber+".";
 						
 						Location l = new Location(getServer().getWorld(this.getConfig().getString(sPath+"origLocation.world")), this.getConfig().getDouble(sPath+"origLocation.x"), this.getConfig().getDouble(sPath+"origLocation.y"), this.getConfig().getDouble(sPath+"origLocation.z"));
@@ -213,6 +213,10 @@ public class Playtime extends JavaPlugin implements Listener
 						
 					}while(s.hasNext());
 				}
+				
+				// get description
+				if(this.getConfig().getString(path+"desc") != null)
+					temp.setDesc(this.getConfig().getString(path+"desc"));
 				
 				// get event start and end times
 				if(this.getConfig().getString(path+"time") != null)
