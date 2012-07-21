@@ -429,6 +429,7 @@ public class Playtime extends JavaPlugin implements Listener
 						    {
 		    					if(map.get(args[1]) != null) // if event with name is found
 		    					{
+		    						String path = "events."+args[1]+".desc";
 		    						if(args.length >= 3) // if there's actually something to put in the desc
 		    						{
 					    				String desc = null;
@@ -440,10 +441,15 @@ public class Playtime extends JavaPlugin implements Listener
 					    						desc = args[i];
 					    				}
 					    				map.get(args[1]).setDesc(desc);
+					    				this.getConfig().set(path,desc);
+					    				player.sendMessage(args[1] + " description changed to " + desc);
 		    						}
 		    						else
 		    						{
 		    							// erase desc
+		    							map.get(args[1]).setDesc(null);
+					    				this.getConfig().set(path,null);
+					    				player.sendMessage(args[1] + " description erased");
 		    						}
 		    					}
 		    					else
@@ -458,7 +464,35 @@ public class Playtime extends JavaPlugin implements Listener
 		    			}
 		    			else // user is server
 		    			{
-		    				
+	    					if(map.get(args[1]) != null) // if event with name is found
+	    					{
+	    						String path = "events."+args[1]+".desc";
+	    						if(args.length >= 3) // if there's actually something to put in the description
+	    						{
+				    				String desc = null;
+				    				for(int j = 2; j < args.length; j++)
+				    				{
+				    					if(j != 2)
+				    						desc = desc + " " + args[j];
+				    					else
+				    						desc = args[j];
+				    				}
+				    				map.get(args[1]).setDesc(desc);
+				    				this.getConfig().set(path,desc);
+				    				log.info(args[1] + " description changed to " + desc);
+	    						}
+	    						else
+	    						{
+	    							// erase desc
+	    							map.get(args[1]).setDesc(null);
+				    				this.getConfig().set(path,null);
+				    				log.info(args[1] + " description erased");
+	    						}
+	    					}
+	    					else
+	    					{
+	    						log.info("Error: must name valid event.");
+	    					}
 		    			}
 		    		}
 					else
