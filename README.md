@@ -22,7 +22,7 @@ Creates an event with the given name. It won't show up on lists for non-admin pl
 /event end [event]*
 Ends an event.
 
-/event [setDescription/setDesc] [event] [description]
+/event [setDescription/setDesc] [event] [description]*
 Sets an event's description, which shows up when using /event info. Currently only displays a single line. Omitting the description will erase the event's current description.
 
 /event setSpawn [event]
