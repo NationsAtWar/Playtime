@@ -451,6 +451,7 @@ public class Playtime extends JavaPlugin implements Listener
 					    				this.getConfig().set(path,null);
 					    				player.sendMessage(args[1] + " description erased");
 		    						}
+		    						this.saveConfig();
 		    					}
 		    					else
 		    					{
@@ -488,6 +489,7 @@ public class Playtime extends JavaPlugin implements Listener
 				    				this.getConfig().set(path,null);
 				    				log.info(args[1] + " description erased");
 	    						}
+	    						this.saveConfig();
 	    					}
 	    					else
 	    					{
@@ -1294,6 +1296,8 @@ public class Playtime extends JavaPlugin implements Listener
 	    					if(player != null)
 	    					{
 	    						player.sendMessage("- " + e.getName() + " -");
+	    						if(e.hasDesc())
+	    							player.sendMessage(e.getDesc());
 	    						if(e.isActive())
 	    							player.sendMessage("Currently active.");
 	    						else
@@ -1367,6 +1371,8 @@ public class Playtime extends JavaPlugin implements Listener
 	    					else // user is server
 	    					{
 	    						log.info("- " + e.getName() + " -");
+	    						if(e.hasDesc())
+	    							log.info(e.getDesc());
 	    						if(e.isActive())
 	    							log.info("Currently active.");
 	    						else

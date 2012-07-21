@@ -78,6 +78,14 @@ public class PlaytimeEvent
 			return false;
 	}
 	
+	public boolean hasDesc()
+	{
+		if(desc != null)
+			return true;
+		else
+			return false;
+	}
+	
 	public boolean hasSpawn()
 	{
 		if(location != null || player != null)
