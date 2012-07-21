@@ -419,7 +419,7 @@ public class Playtime extends JavaPlugin implements Listener
 					}
 					return true;
 	    		}
-	    		else if(args[0].equalsIgnoreCase("setDesc"))
+	    		else if(args[0].equalsIgnoreCase("setDesc")||args[0].equalsIgnoreCase("setDescription"))
 	    		{
 					if(args.length >= 2) // event name
 					{
@@ -442,25 +442,25 @@ public class Playtime extends JavaPlugin implements Listener
 					    				}
 					    				map.get(args[1]).setDesc(desc);
 					    				this.getConfig().set(path,desc);
-					    				player.sendMessage(args[1] + " description changed to " + desc);
+					    				player.sendMessage(args[1] + " description changed to '" + desc +"'.");
 		    						}
 		    						else
 		    						{
 		    							// erase desc
 		    							map.get(args[1]).setDesc(null);
 					    				this.getConfig().set(path,null);
-					    				player.sendMessage(args[1] + " description erased");
+					    				player.sendMessage(args[1] + " description erased.");
 		    						}
 		    						this.saveConfig();
 		    					}
 		    					else
 		    					{
-		    						// error: must be valid event
+		    						player.sendMessage("Error: event '"+args[1]+"' does not exist.");
 		    					}
 						    }
 			    			else
 			    			{
-			    				// error: need permissions
+			    				player.sendMessage("You do not have permission to use this command.");
 			    			}
 		    			}
 		    			else // user is server
@@ -480,26 +480,41 @@ public class Playtime extends JavaPlugin implements Listener
 				    				}
 				    				map.get(args[1]).setDesc(desc);
 				    				this.getConfig().set(path,desc);
-				    				log.info(args[1] + " description changed to " + desc);
+				    				log.info(args[1] + " description changed to '" + desc +"'.");
 	    						}
 	    						else
 	    						{
 	    							// erase desc
 	    							map.get(args[1]).setDesc(null);
 				    				this.getConfig().set(path,null);
-				    				log.info(args[1] + " description erased");
+				    				log.info(args[1] + " description erased.");
 	    						}
 	    						this.saveConfig();
 	    					}
 	    					else
 	    					{
-	    						log.info("Error: must name valid event.");
+	    						log.info("Error: event '"+args[1]+"' does not exist.");
 	    					}
 		    			}
 		    		}
 					else
 					{
 						// help text
+						if(player != null)
+						{
+							if(player.hasPermission("playtime.admins"))
+							{
+								player.sendMessage("Usage: /event [setDescription/setDesc] [event] [description] - sets the description text for the named event.");
+								player.sendMessage("Usage: /event [setDescription/setDesc] [event] - erases the description text for the named event.");
+							}
+							else
+								player.sendMessage("You do not have permission to use this command.");
+						}
+						else
+						{
+							log.info("Usage: /event [setDescription/setDesc] [event] [description] - sets the description text for the named event.");
+							log.info("Usage: /event [setDescription/setDesc] [event] - erases the description text for the named event.");
+						}
 					}
 	    		}
 	    		else if(args[0].equalsIgnoreCase("setSpawn"))
@@ -614,15 +629,15 @@ public class Playtime extends JavaPlugin implements Listener
 						{
 							if(player.hasPermission("playtime.admins"))
 							{
-								player.sendMessage("Usage: /event setspawn [event] - sets the spawn location for the named event at the user's location.");
-								player.sendMessage("Usage: /event setspawn [event] [player] - sets the spawn location for the named event as the named user; respawning players will be teleported to the named player.");
+								player.sendMessage("Usage: /event setSpawn [event] - sets the spawn location for the named event at the user's location.");
+								player.sendMessage("Usage: /event setSpawn [event] [player] - sets the spawn location for the named event as the named user; respawning players will be teleported to the named player.");
 							}
 							else
 								player.sendMessage("You do not have permission to use this command.");
 						}
 						else
 						{
-							log.info("Usage: /event setspawn [event] [player] - sets the spawn location for the named event as the named user; respawning players will be teleported to the named player.");
+							log.info("Usage: /event setSpawn [event] [player] - sets the spawn location for the named event as the named user; respawning players will be teleported to the named player.");
 						}
 					}
 					return true;

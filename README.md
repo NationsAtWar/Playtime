@@ -1,7 +1,7 @@
 Playtime
 ========
 
-Event Spawning v1.0.1
+Event Spawning v1.1.0
 
 Create events with set spawn locations; subscribed players will be teleported to those locations upon respawn, rather than staying at their normal spawnpoint.
 
@@ -22,23 +22,26 @@ Creates an event with the given name. It won't show up on lists for non-admin pl
 /event end [event]*
 Ends an event.
 
-/event setspawn [event]
+/event [setDescription/setDesc] [event] [description]
+Sets an event's description, which shows up when using /event info. Currently only displays a single line. Omitting the description will erase the event's current description.
+
+/event setSpawn [event]
 Sets the respawn point of an event to be where you stand. When subscribed players die and respawn, they'll be teleported to that location.
 
-/event setspawn [event] [player]*
+/event setSpawn [event] [player]*
 Sets a currently-online player as the respawn point of the event. When subscribed players die and respawn, they'll be teleported to that player.
-
-/event [subscribe/sub] [event] [player]*
-Subscribes someone else to the named event.
-
-/event [unsubscribe/unsub] [event] [player]*
-Unsubscribes the named player from the named event, if they're subscribed to it
 
 /event setTime [event] [start/end] yyyy-mm-dd hh:mm:ss*
 Sets an event to start or end at the specified time. May omit seconds. The server currently checks every 30 seconds whether or not an event should begin or end, and all times need to match server time.
 
 /event setTime [event] [start/end] clear*
 Removes start or end time from an event.
+
+/event [subscribe/sub] [event] [player]*
+Subscribes someone else to the named event.
+
+/event [unsubscribe/unsub] [event] [player]*
+Unsubscribes the named player from the named event, if they're subscribed to it
 
 
 Player Commands
